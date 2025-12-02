@@ -244,63 +244,47 @@ export const VenueMap = () => {
                         });
                     }
 
-                    // Helper function to draw isometric polygon (for walkable areas)
-                    const drawIsometricPolygon = (obj: Phaser.Types.Tilemaps.TiledObject, color: number) => {
+                    // Helper function to draw polygon (for walkable areas)
+                    // Same conversion as zones: Cartesian -> Isometric
+                    const drawPolygon = (obj: Phaser.Types.Tilemaps.TiledObject, color: number) => {
                         if (obj.x === undefined || obj.y === undefined) return;
                         
-                        // Check if object has polygon data
                         const polygonData = obj.polygon as Array<{x: number, y: number}> | undefined;
-                        if (!polygonData || polygonData.length < 3) {
-                            console.log('No valid polygon data found');
-                            return;
-                        }
+                        if (!polygonData || polygonData.length < 3) return;
 
                         const graphics = this.add.graphics();
                         graphics.lineStyle(2, color, 0.8);
-                        graphics.fillStyle(color, 0.1); // Semi-transparent fill
+                        graphics.fillStyle(color, 0.1);
 
-                        // Convert polygon points to isometric and draw
-                        const isoPoints: {x: number, y: number}[] = [];
-                        
-                        polygonData.forEach((point) => {
-                            // Polygon points are relative to object position
-                            const worldX = obj.x! + point.x;
-                            const worldY = obj.y! + point.y;
-                            const isoPoint = cartesianToIsometric(worldX, worldY);
-                            isoPoints.push(isoPoint);
+                        // Convert each point from Cartesian to Isometric (same as zones)
+                        const points = polygonData.map((point) => {
+                            const cartX = obj.x! + point.x;
+                            const cartY = obj.y! + point.y;
+                            return cartesianToIsometric(cartX, cartY);
                         });
 
                         // Draw the polygon
-                        if (isoPoints.length > 0) {
-                            graphics.beginPath();
-                            graphics.moveTo(isoPoints[0].x, isoPoints[0].y);
-                            
-                            for (let i = 1; i < isoPoints.length; i++) {
-                                graphics.lineTo(isoPoints[i].x, isoPoints[i].y);
-                            }
-                            
-                            graphics.closePath();
-                            graphics.fillPath();
-                            graphics.strokePath();
-                            graphics.setDepth(50);
+                        graphics.beginPath();
+                        graphics.moveTo(points[0].x, points[0].y);
+                        
+                        for (let i = 1; i < points.length; i++) {
+                            graphics.lineTo(points[i].x, points[i].y);
                         }
-
-                        console.log(`✅ Drew walkable polygon with ${polygonData.length} vertices`);
+                        
+                        graphics.closePath();
+                        graphics.fillPath();
+                        graphics.strokePath();
+                        graphics.setDepth(50);
                     };
 
-                    // Render walkable areas with white border for debugging
+                    // Render walkable areas with green border for debugging
                     const walkableLayer = map.getObjectLayer('walkable');
                     if (walkableLayer) {
                         walkableLayer.objects.forEach((obj) => {
-                            // Check if it's a polygon object
                             if (obj.polygon) {
-                                drawIsometricPolygon(obj, 0x00ff00); // Green color for polygon
-                            } else if (obj.width && obj.height && obj.width > 0 && obj.height > 0) {
-                                // Fallback for rectangle objects
-                                drawIsometricZone(obj, 0xffffff); // White color
+                                drawPolygon(obj, 0x00ff00);
                             }
                         });
-                        console.log(`✅ Rendered ${walkableLayer.objects.length} walkable areas`);
                     }
 
                     // Center the map in the view

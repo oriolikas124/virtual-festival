@@ -38,109 +38,75 @@ const gameState = {
 };
 
 // Load walkable polygon and spawn zone from map.tmj
-let walkablePolygon = null; // Single polygon with points in isometric coordinates
+let walkablePolygon = null; // Single polygon with points (already in isometric screen space from Tiled)
 let spawnZone = null;
-
-// Convert Cartesian coordinates to Isometric coordinates
-function cartesianToIsometric(cartX, cartY) {
-  const isoX = cartX - cartY;
-  const isoY = (cartX + cartY) / 2;
-  return { x: isoX, y: isoY };
-}
 
 function loadMapData() {
   try {
     const mapPath = path.join(__dirname, "../public/map/map.tmj");
     const mapData = JSON.parse(fs.readFileSync(mapPath, "utf-8"));
     
+    // Convert Cartesian to Isometric (same as VenueMap.tsx)
+    const cartesianToIsometric = (cartX, cartY) => {
+      const isoX = cartX - cartY;
+      const isoY = (cartX + cartY) / 2;
+      return { x: isoX, y: isoY };
+    };
+    
     // Load walkable polygon
     const walkableLayer = mapData.layers.find(layer => layer.name === "walkable");
     if (walkableLayer && walkableLayer.objects) {
-      // Find polygon object
       const polygonObj = walkableLayer.objects.find(obj => obj.polygon && obj.polygon.length > 2);
       
       if (polygonObj) {
-        // Convert polygon points to absolute isometric coordinates
-        const isoPoints = polygonObj.polygon.map(point => {
-          const worldX = polygonObj.x + point.x;
-          const worldY = polygonObj.y + point.y;
-          return cartesianToIsometric(worldX, worldY);
+        // Get absolute Cartesian coordinates, then convert to Isometric
+        const points = polygonObj.polygon.map(point => {
+          const cartX = polygonObj.x + point.x;
+          const cartY = polygonObj.y + point.y;
+          return cartesianToIsometric(cartX, cartY);
         });
         
-        // Calculate bounding box for quick rejection test
-        const minX = Math.min(...isoPoints.map(p => p.x));
-        const maxX = Math.max(...isoPoints.map(p => p.x));
-        const minY = Math.min(...isoPoints.map(p => p.y));
-        const maxY = Math.max(...isoPoints.map(p => p.y));
+        // Calculate bounding box
+        const minX = Math.min(...points.map(p => p.x));
+        const maxX = Math.max(...points.map(p => p.x));
+        const minY = Math.min(...points.map(p => p.y));
+        const maxY = Math.max(...points.map(p => p.y));
         
-        walkablePolygon = {
-          points: isoPoints,
-          minX,
-          maxX,
-          minY,
-          maxY
-        };
+        walkablePolygon = { points, minX, maxX, minY, maxY };
         
-        console.log(`✅ Loaded walkable polygon with ${isoPoints.length} vertices`);
+        console.log(`✅ Loaded walkable polygon with ${points.length} vertices`);
         console.log(`   Bounds: X(${minX.toFixed(0)} ~ ${maxX.toFixed(0)}), Y(${minY.toFixed(0)} ~ ${maxY.toFixed(0)})`);
-      } else {
-        // Fallback: try to load rectangles (old format)
-        const rectangles = walkableLayer.objects.filter(obj => obj.width > 0 && obj.height > 0);
-        if (rectangles.length > 0) {
-          console.log(`⚠️ No polygon found, falling back to ${rectangles.length} rectangles`);
-          // Convert rectangles to a simple bounding box for now
-          let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-          rectangles.forEach(obj => {
-            const corners = [
-              cartesianToIsometric(obj.x, obj.y),
-              cartesianToIsometric(obj.x + obj.width, obj.y),
-              cartesianToIsometric(obj.x + obj.width, obj.y + obj.height),
-              cartesianToIsometric(obj.x, obj.y + obj.height)
-            ];
-            corners.forEach(c => {
-              minX = Math.min(minX, c.x);
-              maxX = Math.max(maxX, c.x);
-              minY = Math.min(minY, c.y);
-              maxY = Math.max(maxY, c.y);
-            });
-          });
-          // Create a simple rectangular polygon as fallback
-          walkablePolygon = {
-            points: [
-              { x: minX, y: minY },
-              { x: maxX, y: minY },
-              { x: maxX, y: maxY },
-              { x: minX, y: maxY }
-            ],
-            minX, maxX, minY, maxY
-          };
-        }
       }
     }
     
-    // Load spawn zone
+    // Load spawn zone (rectangle - same conversion as zones)
     const spawnLayer = mapData.layers.find(layer => layer.name === "spawn");
     if (spawnLayer && spawnLayer.objects) {
       const spawn = spawnLayer.objects.find(obj => obj.name === "spawn_zone" && obj.width > 0 && obj.height > 0);
       if (spawn) {
-        // Convert spawn zone to isometric
-        const topLeft = cartesianToIsometric(spawn.x, spawn.y);
-        const topRight = cartesianToIsometric(spawn.x + spawn.width, spawn.y);
-        const bottomRight = cartesianToIsometric(spawn.x + spawn.width, spawn.y + spawn.height);
-        const bottomLeft = cartesianToIsometric(spawn.x, spawn.y + spawn.height);
+        const x = spawn.x;
+        const y = spawn.y;
+        const w = spawn.width;
+        const h = spawn.height;
+        
+        // Convert 4 corners to isometric
+        const topLeft = cartesianToIsometric(x, y);
+        const topRight = cartesianToIsometric(x + w, y);
+        const bottomRight = cartesianToIsometric(x + w, y + h);
+        const bottomLeft = cartesianToIsometric(x, y + h);
+        
+        const minX = Math.min(topLeft.x, topRight.x, bottomRight.x, bottomLeft.x);
+        const maxX = Math.max(topLeft.x, topRight.x, bottomRight.x, bottomLeft.x);
+        const minY = Math.min(topLeft.y, topRight.y, bottomRight.y, bottomLeft.y);
+        const maxY = Math.max(topLeft.y, topRight.y, bottomRight.y, bottomLeft.y);
         
         spawnZone = {
-          // Center of the isometric diamond
-          centerX: (topLeft.x + bottomRight.x) / 2,
-          centerY: (topLeft.y + bottomRight.y) / 2,
-          // Bounds for random spawn
-          minX: Math.min(topLeft.x, topRight.x, bottomRight.x, bottomLeft.x),
-          maxX: Math.max(topLeft.x, topRight.x, bottomRight.x, bottomLeft.x),
-          minY: Math.min(topLeft.y, topRight.y, bottomRight.y, bottomLeft.y),
-          maxY: Math.max(topLeft.y, topRight.y, bottomRight.y, bottomLeft.y),
-          points: [topLeft, topRight, bottomRight, bottomLeft]
+          centerX: (minX + maxX) / 2,
+          centerY: (minY + maxY) / 2,
+          minX, maxX, minY, maxY,
+          diamond: [topLeft, topRight, bottomRight, bottomLeft]
         };
-        console.log(`✅ Loaded spawn zone at isometric center (${spawnZone.centerX.toFixed(0)}, ${spawnZone.centerY.toFixed(0)})`);
+        console.log(`✅ Loaded spawn zone at center (${spawnZone.centerX.toFixed(0)}, ${spawnZone.centerY.toFixed(0)})`);
       }
     }
     
@@ -157,7 +123,7 @@ function loadMapData() {
 
 // Check if point is inside a polygon using ray casting algorithm
 function isPointInPolygon(px, py, polygon) {
-  const points = polygon.points;
+  const points = polygon.points || polygon;
   let inside = false;
   
   for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
@@ -172,18 +138,18 @@ function isPointInPolygon(px, py, polygon) {
   return inside;
 }
 
-// Check if point is inside an isometric diamond (using cross product) - for spawn zone
-function isPointInDiamond(px, py, points) {
-  // Check if point is on the same side of all edges
-  for (let i = 0; i < 4; i++) {
-    const p1 = points[i];
-    const p2 = points[(i + 1) % 4];
-    
-    // Cross product to determine which side of the edge the point is on
-    const cross = (p2.x - p1.x) * (py - p1.y) - (p2.y - p1.y) * (px - p1.x);
-    if (cross < 0) return false; // Point is outside this edge
+// Check if a point is inside the isometric diamond spawn zone
+function isInSpawnZone(x, y) {
+  if (!spawnZone || !spawnZone.diamond) return false;
+  
+  // Quick bounding box check first
+  if (x < spawnZone.minX || x > spawnZone.maxX ||
+      y < spawnZone.minY || y > spawnZone.maxY) {
+    return false;
   }
-  return true;
+  
+  // Precise diamond check using ray casting
+  return isPointInPolygon(x, y, spawnZone.diamond);
 }
 
 // Check if a point is inside the walkable polygon
@@ -216,12 +182,12 @@ function generatePlayerId() {
 
 function getRandomSpawnPosition() {
   if (spawnZone) {
-    // Random position within spawn zone diamond
-    // Use rejection sampling to get point inside diamond
+    // Random position within spawn zone isometric diamond
     for (let i = 0; i < 100; i++) {
       const x = spawnZone.minX + Math.random() * (spawnZone.maxX - spawnZone.minX);
       const y = spawnZone.minY + Math.random() * (spawnZone.maxY - spawnZone.minY);
-      if (isPointInDiamond(x, y, spawnZone.points) && isInWalkableArea(x, y)) {
+      // Check if point is inside the diamond AND walkable area
+      if (isInSpawnZone(x, y) && isInWalkableArea(x, y)) {
         return { x, y };
       }
     }
@@ -229,7 +195,7 @@ function getRandomSpawnPosition() {
     return { x: spawnZone.centerX, y: spawnZone.centerY };
   }
   
-  // If no spawn zone, spawn inside it
+  // If no spawn zone, spawn inside walkable area
   if (walkablePolygon) {
     for (let i = 0; i < 100; i++) {
       const x = walkablePolygon.minX + Math.random() * (walkablePolygon.maxX - walkablePolygon.minX);
@@ -314,22 +280,22 @@ io.on("connection", (socket) => {
 
     if (direction) {
       // Handle directional movement (from controller)
-      const moveSpeed = 20;
+      const moveSpeed = 1;
       let newX = player.x;
       let newY = player.y;
 
       switch (direction) {
         case "up":
-          newY = Math.max(0, player.y - moveSpeed);
+          newY = player.y - moveSpeed;
           break;
         case "down":
-          newY = Math.min(gameState.mapSize.height, player.y + moveSpeed);
+          newY = player.y + moveSpeed;
           break;
         case "left":
-          newX = Math.max(0, player.x - moveSpeed);
+          newX = player.x - moveSpeed;
           break;
         case "right":
-          newX = Math.min(gameState.mapSize.width, player.x + moveSpeed);
+          newX = player.x + moveSpeed;
           break;
       }
 
@@ -340,13 +306,10 @@ io.on("connection", (socket) => {
       }
     } else if (x !== undefined && y !== undefined) {
       // Handle absolute position (from venue map clicks)
-      const newX = Math.max(0, Math.min(gameState.mapSize.width, x));
-      const newY = Math.max(0, Math.min(gameState.mapSize.height, y));
-      
-      // Check collision before updating position
-      if (!checkCollision(newX, newY)) {
-        player.x = newX;
-        player.y = newY;
+      // No rectangular bounds - only walkable polygon check
+      if (!checkCollision(x, y)) {
+        player.x = x;
+        player.y = y;
       }
     }
 
@@ -368,15 +331,9 @@ io.on("connection", (socket) => {
       const moveX = x * moveSpeed;
       const moveY = y * moveSpeed;
 
-      // Calculate new position with bounds checking
-      const newX = Math.max(
-        0,
-        Math.min(gameState.mapSize.width, player.x + moveX)
-      );
-      const newY = Math.max(
-        0,
-        Math.min(gameState.mapSize.height, player.y + moveY)
-      );
+      // Calculate new position - NO rectangular bounds, only walkable polygon check
+      const newX = player.x + moveX;
+      const newY = player.y + moveY;
 
       // Check collision before updating position
       if (!checkCollision(newX, newY)) {
