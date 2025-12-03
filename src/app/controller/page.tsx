@@ -14,8 +14,18 @@ interface JoystickPosition {
 
 type StateType = 'intro' | 'joystick';
 
+// Zone information mapping
+const zoneInfo: Record<string, { name: string; color: string }> = {
+  zone1: { name: 'Zone 1', color: 'bg-red-500' },
+  zone2: { name: 'Zone 2', color: 'bg-orange-500' },
+  zone3: { name: 'Zone 3', color: 'bg-yellow-500' },
+  zone4: { name: 'Zone 4', color: 'bg-green-500' },
+  zone5: { name: 'Zone 5', color: 'bg-blue-500' },
+  zone6: { name: 'Zone 6', color: 'bg-purple-500' },
+};
+
 export default function ControllerPage() {
-  const { socket, isConnected, currentPlayer, setNickname, isNicknameSet, setIsNicknameSet } = useSocket();
+  const { socket, isConnected, setNickname, isNicknameSet, setIsNicknameSet, currentZone } = useSocket();
   const [currentState, setCurrentState] = useState<StateType>('intro');
   const [tempNickname, setTempNickname] = useState('');
 
@@ -238,38 +248,17 @@ export default function ControllerPage() {
               <div className='absolute w-full text-xl bg-theme-purple py-4'>
                 <h2>ジョイスティックを使って、祭りを楽しもう！</h2>
               </div>
-              <div className='absolute bottom-32 w-full flex justify-center flex-wrap gap-4'>
-                <Link href="/controller/zone_1">
-                  <button className="p-2 px-6 bg-gray-200/80 rounded-lg text-black font-semibold">
-                    Zone1
-                  </button>
-                </Link>
-                <Link href="/controller/zone_2">
-                  <button className="p-2 px-6 bg-gray-200/80 rounded-lg text-black font-semibold">
-                    Zone2
-                  </button>
-                </Link>
-                <Link href="/controller/zone_3">
-                  <button className="p-2 px-6 bg-gray-200/80 rounded-lg text-black font-semibold">
-                    Zone3
-                  </button>
-                </Link>
-                <Link href="/controller/zone_4">
-                  <button className="p-2 px-6 bg-gray-200/80 rounded-lg text-black font-semibold">
-                    Zone4
-                  </button>
-                </Link>
-                <Link href="/controller/zone_5">
-                  <button className="p-2 px-6 bg-gray-200/80 rounded-lg text-black font-semibold">
-                    Zone5
-                  </button>
-                </Link>
-                <Link href="/controller/zone_6">
-                  <button className="p-2 px-6 bg-gray-200/80 rounded-lg text-black font-semibold">
-                    Zone6
-                  </button>
-                </Link>
-              </div>
+              
+              {/* Zone trigger button - only show when in a zone */}
+              {currentZone && zoneInfo[currentZone] && (
+                <div className='absolute bottom-32 w-full flex justify-center animate-bounce'>
+                  <Link href={`/controller/${currentZone.replace('zone', 'zone_')}`}>
+                    <button className={`p-4 px-8 ${zoneInfo[currentZone].color} rounded-xl text-white font-bold text-xl shadow-lg border-2 border-white/50 transition-transform active:scale-95`}>
+                      {zoneInfo[currentZone].name} に入る
+                    </button>
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Real Joystick */}
@@ -298,7 +287,7 @@ export default function ControllerPage() {
       </main>
       {/* Connection Status */}
       <div className="text-center mb-4">
-        {currentPlayer && (
+        {/* {currentPlayer && (
           <div style={{ marginTop: '1rem' }}>
             <p><strong>Your Avatar:</strong></p>
             <div className="player-item">
@@ -310,7 +299,7 @@ export default function ControllerPage() {
             </div>
             <p><small>Position: ({Math.round(currentPlayer.x)}, {Math.round(currentPlayer.y)})</small></p>
           </div>
-        )}
+        )} */}
         <div className="status-indicator text-white">
           <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}></div>
           {isConnected ? '🟢 Connected to Festival' : '🔴 Connecting...'}

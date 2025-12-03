@@ -37,84 +37,161 @@ const gameState = {
   mapSize: { width: 960, height: 480 },
 };
 
-// Load walkable polygon and spawn zone from map.tmj
+// Load walkable polygon, spawn zone and trigger zones from map.tmj
 let walkablePolygon = null; // Single polygon with points (already in isometric screen space from Tiled)
 let spawnZone = null;
+let triggerZones = []; // Array of zones with trigger property
 
 function loadMapData() {
   try {
     const mapPath = path.join(__dirname, "../public/map/map.tmj");
     const mapData = JSON.parse(fs.readFileSync(mapPath, "utf-8"));
-    
+
     // Convert Cartesian to Isometric (same as VenueMap.tsx)
     const cartesianToIsometric = (cartX, cartY) => {
       const isoX = cartX - cartY;
       const isoY = (cartX + cartY) / 2;
       return { x: isoX, y: isoY };
     };
-    
+
     // Load walkable polygon
-    const walkableLayer = mapData.layers.find(layer => layer.name === "walkable");
+    const walkableLayer = mapData.layers.find(
+      (layer) => layer.name === "walkable"
+    );
     if (walkableLayer && walkableLayer.objects) {
-      const polygonObj = walkableLayer.objects.find(obj => obj.polygon && obj.polygon.length > 2);
-      
+      const polygonObj = walkableLayer.objects.find(
+        (obj) => obj.polygon && obj.polygon.length > 2
+      );
+
       if (polygonObj) {
         // Get absolute Cartesian coordinates, then convert to Isometric
-        const points = polygonObj.polygon.map(point => {
+        const points = polygonObj.polygon.map((point) => {
           const cartX = polygonObj.x + point.x;
           const cartY = polygonObj.y + point.y;
           return cartesianToIsometric(cartX, cartY);
         });
-        
+
         // Calculate bounding box
-        const minX = Math.min(...points.map(p => p.x));
-        const maxX = Math.max(...points.map(p => p.x));
-        const minY = Math.min(...points.map(p => p.y));
-        const maxY = Math.max(...points.map(p => p.y));
-        
+        const minX = Math.min(...points.map((p) => p.x));
+        const maxX = Math.max(...points.map((p) => p.x));
+        const minY = Math.min(...points.map((p) => p.y));
+        const maxY = Math.max(...points.map((p) => p.y));
+
         walkablePolygon = { points, minX, maxX, minY, maxY };
-        
-        console.log(`✅ Loaded walkable polygon with ${points.length} vertices`);
-        console.log(`   Bounds: X(${minX.toFixed(0)} ~ ${maxX.toFixed(0)}), Y(${minY.toFixed(0)} ~ ${maxY.toFixed(0)})`);
       }
     }
-    
+
     // Load spawn zone (rectangle - same conversion as zones)
-    const spawnLayer = mapData.layers.find(layer => layer.name === "spawn");
+    const spawnLayer = mapData.layers.find((layer) => layer.name === "spawn");
     if (spawnLayer && spawnLayer.objects) {
-      const spawn = spawnLayer.objects.find(obj => obj.name === "spawn_zone" && obj.width > 0 && obj.height > 0);
+      const spawn = spawnLayer.objects.find(
+        (obj) => obj.name === "spawn_zone" && obj.width > 0 && obj.height > 0
+      );
       if (spawn) {
         const x = spawn.x;
         const y = spawn.y;
         const w = spawn.width;
         const h = spawn.height;
-        
+
         // Convert 4 corners to isometric
         const topLeft = cartesianToIsometric(x, y);
         const topRight = cartesianToIsometric(x + w, y);
         const bottomRight = cartesianToIsometric(x + w, y + h);
         const bottomLeft = cartesianToIsometric(x, y + h);
-        
-        const minX = Math.min(topLeft.x, topRight.x, bottomRight.x, bottomLeft.x);
-        const maxX = Math.max(topLeft.x, topRight.x, bottomRight.x, bottomLeft.x);
-        const minY = Math.min(topLeft.y, topRight.y, bottomRight.y, bottomLeft.y);
-        const maxY = Math.max(topLeft.y, topRight.y, bottomRight.y, bottomLeft.y);
-        
+
+        const minX = Math.min(
+          topLeft.x,
+          topRight.x,
+          bottomRight.x,
+          bottomLeft.x
+        );
+        const maxX = Math.max(
+          topLeft.x,
+          topRight.x,
+          bottomRight.x,
+          bottomLeft.x
+        );
+        const minY = Math.min(
+          topLeft.y,
+          topRight.y,
+          bottomRight.y,
+          bottomLeft.y
+        );
+        const maxY = Math.max(
+          topLeft.y,
+          topRight.y,
+          bottomRight.y,
+          bottomLeft.y
+        );
+
         spawnZone = {
           centerX: (minX + maxX) / 2,
           centerY: (minY + maxY) / 2,
-          minX, maxX, minY, maxY,
-          diamond: [topLeft, topRight, bottomRight, bottomLeft]
+          minX,
+          maxX,
+          minY,
+          maxY,
+          diamond: [topLeft, topRight, bottomRight, bottomLeft],
         };
-        console.log(`✅ Loaded spawn zone at center (${spawnZone.centerX.toFixed(0)}, ${spawnZone.centerY.toFixed(0)})`);
       }
     }
-    
-    if (!walkablePolygon) {
-      console.log("⚠️ No walkable layer found - movement unrestricted");
-    }
-    if (!spawnZone) {
-      console.log("⚠️ No spawn_zone found - using default spawn");
+
+    // Load trigger zones from zones layer
+    const zonesLayer = mapData.layers.find((layer) => layer.name === "zones");
+    if (zonesLayer && zonesLayer.objects) {
+      zonesLayer.objects.forEach((obj) => {
+        // Only process objects with trigger property and valid dimensions
+        if (obj.properties && obj.width > 0 && obj.height > 0) {
+          const triggerProp = obj.properties.find((p) => p.name === "trigger");
+          if (triggerProp) {
+            const x = obj.x;
+            const y = obj.y;
+            const w = obj.width;
+            const h = obj.height;
+
+            // Convert 4 corners to isometric (same as spawn zone)
+            const topLeft = cartesianToIsometric(x, y);
+            const topRight = cartesianToIsometric(x + w, y);
+            const bottomRight = cartesianToIsometric(x + w, y + h);
+            const bottomLeft = cartesianToIsometric(x, y + h);
+
+            const minX = Math.min(
+              topLeft.x,
+              topRight.x,
+              bottomRight.x,
+              bottomLeft.x
+            );
+            const maxX = Math.max(
+              topLeft.x,
+              topRight.x,
+              bottomRight.x,
+              bottomLeft.x
+            );
+            const minY = Math.min(
+              topLeft.y,
+              topRight.y,
+              bottomRight.y,
+              bottomLeft.y
+            );
+            const maxY = Math.max(
+              topLeft.y,
+              topRight.y,
+              bottomRight.y,
+              bottomLeft.y
+            );
+
+            triggerZones.push({
+              name: obj.name,
+              trigger: triggerProp.value,
+              minX,
+              maxX,
+              minY,
+              maxY,
+              diamond: [topLeft, topRight, bottomRight, bottomLeft],
+            });
+          }
+        }
+      });
     }
   } catch (error) {
     console.error("❌ Failed to load map data:", error.message);
@@ -125,44 +202,70 @@ function loadMapData() {
 function isPointInPolygon(px, py, polygon) {
   const points = polygon.points || polygon;
   let inside = false;
-  
+
   for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
-    const xi = points[i].x, yi = points[i].y;
-    const xj = points[j].x, yj = points[j].y;
-    
-    const intersect = ((yi > py) !== (yj > py)) &&
-                      (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
+    const xi = points[i].x,
+      yi = points[i].y;
+    const xj = points[j].x,
+      yj = points[j].y;
+
+    const intersect =
+      yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi;
     if (intersect) inside = !inside;
   }
-  
+
   return inside;
 }
 
 // Check if a point is inside the isometric diamond spawn zone
 function isInSpawnZone(x, y) {
   if (!spawnZone || !spawnZone.diamond) return false;
-  
+
   // Quick bounding box check first
-  if (x < spawnZone.minX || x > spawnZone.maxX ||
-      y < spawnZone.minY || y > spawnZone.maxY) {
+  if (
+    x < spawnZone.minX ||
+    x > spawnZone.maxX ||
+    y < spawnZone.minY ||
+    y > spawnZone.maxY
+  ) {
     return false;
   }
-  
+
   // Precise diamond check using ray casting
   return isPointInPolygon(x, y, spawnZone.diamond);
+}
+
+// Check which trigger zone a point is in (returns trigger value or null)
+function getPlayerZone(x, y) {
+  for (const zone of triggerZones) {
+    // Quick bounding box check first
+    if (x < zone.minX || x > zone.maxX || y < zone.minY || y > zone.maxY) {
+      continue;
+    }
+
+    // Precise diamond check using ray casting
+    if (isPointInPolygon(x, y, zone.diamond)) {
+      return zone.trigger;
+    }
+  }
+  return null;
 }
 
 // Check if a point is inside the walkable polygon
 function isInWalkableArea(x, y) {
   // If no walkable polygon defined, allow movement everywhere
   if (!walkablePolygon) return true;
-  
+
   // Quick bounding box check first
-  if (x < walkablePolygon.minX || x > walkablePolygon.maxX ||
-      y < walkablePolygon.minY || y > walkablePolygon.maxY) {
+  if (
+    x < walkablePolygon.minX ||
+    x > walkablePolygon.maxX ||
+    y < walkablePolygon.minY ||
+    y > walkablePolygon.maxY
+  ) {
     return false;
   }
-  
+
   // Precise polygon check using ray casting
   return isPointInPolygon(x, y, walkablePolygon);
 }
@@ -184,8 +287,10 @@ function getRandomSpawnPosition() {
   if (spawnZone) {
     // Random position within spawn zone isometric diamond
     for (let i = 0; i < 100; i++) {
-      const x = spawnZone.minX + Math.random() * (spawnZone.maxX - spawnZone.minX);
-      const y = spawnZone.minY + Math.random() * (spawnZone.maxY - spawnZone.minY);
+      const x =
+        spawnZone.minX + Math.random() * (spawnZone.maxX - spawnZone.minX);
+      const y =
+        spawnZone.minY + Math.random() * (spawnZone.maxY - spawnZone.minY);
       // Check if point is inside the diamond AND walkable area
       if (isInSpawnZone(x, y) && isInWalkableArea(x, y)) {
         return { x, y };
@@ -194,23 +299,27 @@ function getRandomSpawnPosition() {
     // Fallback to center if rejection sampling fails
     return { x: spawnZone.centerX, y: spawnZone.centerY };
   }
-  
+
   // If no spawn zone, spawn inside walkable area
   if (walkablePolygon) {
     for (let i = 0; i < 100; i++) {
-      const x = walkablePolygon.minX + Math.random() * (walkablePolygon.maxX - walkablePolygon.minX);
-      const y = walkablePolygon.minY + Math.random() * (walkablePolygon.maxY - walkablePolygon.minY);
+      const x =
+        walkablePolygon.minX +
+        Math.random() * (walkablePolygon.maxX - walkablePolygon.minX);
+      const y =
+        walkablePolygon.minY +
+        Math.random() * (walkablePolygon.maxY - walkablePolygon.minY);
       if (isInWalkableArea(x, y)) {
         return { x, y };
       }
     }
     // Fallback to center of walkable area
-    return { 
+    return {
       x: (walkablePolygon.minX + walkablePolygon.maxX) / 2,
-      y: (walkablePolygon.minY + walkablePolygon.maxY) / 2
+      y: (walkablePolygon.minY + walkablePolygon.maxY) / 2,
     };
   }
-  
+
   // Default fallback
   return {
     x: Math.random() * (gameState.mapSize.width - 100) + 50,
@@ -248,6 +357,7 @@ io.on("connection", (socket) => {
         y: spawnPosition.y,
         color: `hsl(${Math.random() * 360}, 70%, 60%)`, // Random color
         name: nickname,
+        currentZone: null, // Track which zone player is in
         connectedAt: new Date().toISOString(),
       };
 
@@ -258,6 +368,17 @@ io.on("connection", (socket) => {
       console.log(
         `✅ Player ${newPlayer.name} spawned at (${newPlayer.x}, ${newPlayer.y})`
       );
+
+      // Check initial zone
+      const initialZone = getPlayerZone(newPlayer.x, newPlayer.y);
+      if (initialZone) {
+        newPlayer.currentZone = initialZone;
+        gameState.players[socket.id].currentZone = initialZone;
+        socket.emit("enterZone", { zone: initialZone });
+        console.log(
+          `📍 Player ${newPlayer.name} spawned in zone: ${initialZone}`
+        );
+      }
 
       // Send player their own data
       socket.emit("playerData", newPlayer);
@@ -337,8 +458,28 @@ io.on("connection", (socket) => {
 
       // Check collision before updating position
       if (!checkCollision(newX, newY)) {
+        const oldZone = player.currentZone;
         player.x = newX;
         player.y = newY;
+
+        // Check if player entered or left a zone
+        const newZone = getPlayerZone(newX, newY);
+
+        if (newZone !== oldZone) {
+          player.currentZone = newZone;
+
+          if (oldZone && !newZone) {
+            // Left a zone
+            socket.emit("leaveZone", { zone: oldZone });
+          } else if (!oldZone && newZone) {
+            // Entered a zone
+            socket.emit("enterZone", { zone: newZone });
+          } else if (oldZone && newZone) {
+            // Changed from one zone to another
+            socket.emit("leaveZone", { zone: oldZone });
+            socket.emit("enterZone", { zone: newZone });
+          }
+        }
       }
 
       // Update game state
@@ -348,16 +489,15 @@ io.on("connection", (socket) => {
   });
 
   // Handle player name update
-  socket.on("updateName", (newName) => {
-    const player = players.get(socket.id);
-    if (player && newName && newName.trim()) {
-      player.name = newName.trim();
-      gameState.players[socket.id] = { ...player };
+  // socket.on("updateName", (newName) => {
+  //   const player = players.get(socket.id);
+  //   if (player && newName && newName.trim()) {
+  //     player.name = newName.trim();
+  //     gameState.players[socket.id] = { ...player };
 
-      console.log(`📝 Player ${player.name} changed name to: ${player.name}`);
-      broadcastGameState();
-    }
-  });
+  //     broadcastGameState();
+  //   }
+  // });
 
   // Handle disconnect
   socket.on("disconnect", () => {
@@ -447,16 +587,10 @@ server.listen(PORT, "0.0.0.0", () => {
 // Graceful shutdown
 process.on("SIGTERM", () => {
   console.log("📴 Server shutting down gracefully...");
-  server.close(() => {
-    console.log("✅ Server closed");
-    process.exit(0);
-  });
+  process.exit(0);
 });
 
 process.on("SIGINT", () => {
-  console.log("📴 Server shutting down gracefully...");
-  server.close(() => {
-    console.log("✅ Server closed");
-    process.exit(0);
-  });
+  console.log("📴 Server shutting down...");
+  process.exit(0);
 });

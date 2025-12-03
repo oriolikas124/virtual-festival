@@ -16,6 +16,7 @@ interface Player {
   y: number;
   color: string;
   name: string;
+  currentZone?: string | null;
 }
 
 interface VectorData {
@@ -33,6 +34,7 @@ interface SocketContextType {
   setNickname: (name: string) => void;
   isNicknameSet: boolean;
   setIsNicknameSet: (value: boolean) => void;
+  currentZone: string | null;
   // Helper methods
   emitMovement: (direction: string) => void;
   emitMoveVector: (vectorData: VectorData) => void;
@@ -46,6 +48,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const [nickname, setNicknameState] = useState("");
   const [isNicknameSet, setIsNicknameSet] = useState(false);
+  const [currentZone, setCurrentZone] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
   // Wrapper for setNickname that also saves to localStorage
@@ -147,6 +150,21 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     newSocket.on("playerData", (player: Player) => {
       console.log("📊 Received player data:", player);
       setCurrentPlayer(player);
+      // Set initial zone if player spawns in a zone
+      if (player.currentZone) {
+        setCurrentZone(player.currentZone);
+      }
+    });
+
+    // Listen for zone enter/leave events
+    newSocket.on("enterZone", (data: { zone: string }) => {
+      console.log("📍 Entered zone:", data.zone);
+      setCurrentZone(data.zone);
+    });
+
+    newSocket.on("leaveZone", (data: { zone: string }) => {
+      console.log("🚪 Left zone:", data.zone);
+      setCurrentZone(null);
     });
 
     newSocket.on("reconnect", () => {
@@ -178,6 +196,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     setNickname,
     isNicknameSet,
     setIsNicknameSet,
+    currentZone,
     emitMovement,
     emitMoveVector,
   };
