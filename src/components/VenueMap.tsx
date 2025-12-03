@@ -246,46 +246,46 @@ export const VenueMap = () => {
 
                     // Helper function to draw polygon (for walkable areas)
                     // Same conversion as zones: Cartesian -> Isometric
-                    const drawPolygon = (obj: Phaser.Types.Tilemaps.TiledObject, color: number) => {
-                        if (obj.x === undefined || obj.y === undefined) return;
+                    // const drawPolygon = (obj: Phaser.Types.Tilemaps.TiledObject, color: number) => {
+                    //     if (obj.x === undefined || obj.y === undefined) return;
                         
-                        const polygonData = obj.polygon as Array<{x: number, y: number}> | undefined;
-                        if (!polygonData || polygonData.length < 3) return;
+                    //     const polygonData = obj.polygon as Array<{x: number, y: number}> | undefined;
+                    //     if (!polygonData || polygonData.length < 3) return;
 
-                        const graphics = this.add.graphics();
-                        graphics.lineStyle(2, color, 0.8);
-                        graphics.fillStyle(color, 0.1);
+                    //     const graphics = this.add.graphics();
+                    //     graphics.lineStyle(2, color, 0.8);
+                    //     graphics.fillStyle(color, 0.1);
 
-                        // Convert each point from Cartesian to Isometric (same as zones)
-                        const points = polygonData.map((point) => {
-                            const cartX = obj.x! + point.x;
-                            const cartY = obj.y! + point.y;
-                            return cartesianToIsometric(cartX, cartY);
-                        });
+                    //     // Convert each point from Cartesian to Isometric (same as zones)
+                    //     const points = polygonData.map((point) => {
+                    //         const cartX = obj.x! + point.x;
+                    //         const cartY = obj.y! + point.y;
+                    //         return cartesianToIsometric(cartX, cartY);
+                    //     });
 
-                        // Draw the polygon
-                        graphics.beginPath();
-                        graphics.moveTo(points[0].x, points[0].y);
+                    //     // Draw the polygon
+                    //     graphics.beginPath();
+                    //     graphics.moveTo(points[0].x, points[0].y);
                         
-                        for (let i = 1; i < points.length; i++) {
-                            graphics.lineTo(points[i].x, points[i].y);
-                        }
+                    //     for (let i = 1; i < points.length; i++) {
+                    //         graphics.lineTo(points[i].x, points[i].y);
+                    //     }
                         
-                        graphics.closePath();
-                        graphics.fillPath();
-                        graphics.strokePath();
-                        graphics.setDepth(50);
-                    };
+                    //     graphics.closePath();
+                    //     graphics.fillPath();
+                    //     graphics.strokePath();
+                    //     graphics.setDepth(50);
+                    // };
 
                     // Render walkable areas with green border for debugging
-                    const walkableLayer = map.getObjectLayer('walkable');
-                    if (walkableLayer) {
-                        walkableLayer.objects.forEach((obj) => {
-                            if (obj.polygon) {
-                                drawPolygon(obj, 0x00ff00);
-                            }
-                        });
-                    }
+                    // const walkableLayer = map.getObjectLayer('walkable');
+                    // if (walkableLayer) {
+                    //     walkableLayer.objects.forEach((obj) => {
+                    //         if (obj.polygon) {
+                    //             drawPolygon(obj, 0x00ff00);
+                    //         }
+                    //     });
+                    // }
 
                     // Center the map in the view
                     const worldX = (map.width - map.height) * map.tileWidth * 0.2;

@@ -401,7 +401,7 @@ io.on("connection", (socket) => {
 
     if (direction) {
       // Handle directional movement (from controller)
-      const moveSpeed = 1;
+      const moveSpeed = 0.1;
       let newX = player.x;
       let newY = player.y;
 
@@ -448,7 +448,7 @@ io.on("connection", (socket) => {
 
     if (speed > 0) {
       // Calculate movement based on vector with slow constant speed
-      const moveSpeed = 2; // Slower constant speed (reduced from 5)
+      const moveSpeed = 1.2; // Low speed
       const moveX = x * moveSpeed;
       const moveY = y * moveSpeed;
 
