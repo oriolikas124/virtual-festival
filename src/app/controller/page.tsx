@@ -16,12 +16,12 @@ type StateType = 'intro' | 'joystick';
 
 // Zone information mapping
 const zoneInfo: Record<string, { name: string; color: string }> = {
-  zone1: { name: 'Zone 1', color: 'bg-red-500' },
-  zone2: { name: 'Zone 2', color: 'bg-orange-500' },
-  zone3: { name: 'Zone 3', color: 'bg-yellow-500' },
-  zone4: { name: 'Zone 4', color: 'bg-green-500' },
-  zone5: { name: 'Zone 5', color: 'bg-blue-500' },
-  zone6: { name: 'Zone 6', color: 'bg-purple-500' },
+  zone1: { name: '着物トライオン', color: 'bg-red-500' },
+  zone2: { name: '山手線クイズ', color: 'bg-orange-500' },
+  zone3: { name: 'アナウンスクイズ', color: 'bg-yellow-500' },
+  zone4: { name: '富士山パズル', color: 'bg-green-500' },
+  zone5: { name: '鹿せんべい', color: 'bg-blue-500' },
+  zone6: { name: '納豆混ぜ', color: 'bg-purple-500' },
 };
 
 export default function ControllerPage() {
@@ -207,18 +207,18 @@ export default function ControllerPage() {
       <Header />
 
       {/* Main content */}
-      <main className="flex flex-col items-center justify-center gap-16 w-full flex-1 px-6 text-center">
+      <main className="flex flex-col items-center justify-between gap-16 w-full flex-1 px-6 text-center">
         {/* INTRO STATE */}
         {currentState === 'intro' && (
-          <div className="flex flex-col items-center justify-center space-y-8 w-full max-w-md">
-            <div className='absolute w-full top-48'>
+          <div className="flex flex-col items-center justify-center w-full">
+            <div className='w-full mt-8'>
               <div className="flex flex-col items-center">
                 <h1 className='w-full text-2xl bg-theme-purple font-bold py-4'>Welcome to <br />  Virtual Festival</h1>
                 <p className='w-full text-lg bg-theme-yellow py-2'>祭りを楽しむためのニックネームを入力してください</p>
               </div>
             </div>
 
-            <div className='w-full space-y-4 mt-48'>
+            <div className='w-full space-y-4 mt-32'>
               <input
                 type='text'
                 value={tempNickname}
@@ -245,24 +245,24 @@ export default function ControllerPage() {
           <>
             {/* Banner space */}
             <div className="flex flex-col items-center mb-8 space-y-4">
-              <div className='absolute w-full text-xl bg-theme-purple py-4'>
+              <div className='w-full rounded-sm text-xl bg-theme-purple py-4 px-2 mt-8'>
                 <h2>ジョイスティックを使って、祭りを楽しもう！</h2>
               </div>
               
               {/* Zone trigger button - only show when in a zone */}
-              {currentZone && zoneInfo[currentZone] && (
-                <div className='absolute bottom-32 w-full flex justify-center animate-bounce'>
+              <div className={`w-full h-16 flex justify-center items-center mt-8 transition-opacity duration-300 ${currentZone && zoneInfo[currentZone] ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                {currentZone && zoneInfo[currentZone] && (
                   <Link href={`/controller/${currentZone.replace('zone', 'zone_')}`}>
-                    <button className={`p-4 px-8 ${zoneInfo[currentZone].color} rounded-xl text-white font-bold text-xl shadow-lg border-2 border-white/50 transition-transform active:scale-95`}>
+                    <button className={`p-4 px-8 ${zoneInfo[currentZone].color} rounded-xl text-white font-bold text-xl shadow-lg border-2 border-white/50 transition-transform active:scale-95 animate-bounce`}>
                       {zoneInfo[currentZone].name} に入る
                     </button>
                   </Link>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Real Joystick */}
-            <div className="controller-container">
+            <div className="controller-container mb-8">
               <div className="joystick-wrapper">
                 <div
                   ref={joystickRef}
@@ -280,8 +280,9 @@ export default function ControllerPage() {
                   </div>
                 </div>
               </div>
-
             </div>
+
+            
           </>
         )}
       </main>
@@ -331,7 +332,7 @@ export default function ControllerPage() {
         }
         
         .joystick-knob {
-          position: absolute;
+          position: relative;
           width: 60px;
           height: 60px;
           border-radius: 50%;
