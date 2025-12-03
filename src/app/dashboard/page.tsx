@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { InfiniteGallery } from "@/components/ui/infinite-gallery";
+import Link from "next/link";
+import Image from "next/image";
 
 interface GameRanking {
   title: string;
@@ -123,7 +125,7 @@ export default function DashboardPage() {
       className="flex flex-col min-h-screen p-6 bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url(/background/db_background.jpg)" }}
     >
-      {/* Top Section: 4 Ranking Tables */}
+      {/* Top Section: 4 Ranking Tables + 1 Image */}
       <div className="h-110 grid grid-cols-5 gap-4 mb-8">
         {gameRankings.map((game, idx) => (
           <div
@@ -177,13 +179,27 @@ export default function DashboardPage() {
               </table>
               {/* Vertical lines overlay to extend to bottom regardless of rows */}
               <div className="pointer-events-none absolute inset-0">
-                <div className="absolute top-0 bottom-0 left-[3rem] w-px bg-white" />
-                <div className="absolute top-0 bottom-0 right-[5rem] w-px bg-white" />
+                <div className="absolute top-0 bottom-0 left-12 w-px bg-white" />
+                <div className="absolute top-0 bottom-0 right-20 w-px bg-white" />
               </div>
             </div>
           </div>
         ))}
+        {/* 5th Column: Fighting Image */}
+        <div
+          className="rounded-2xl shadow-lg border-2 flex items-center justify-center overflow-hidden"
+          style={{ borderColor: "#B3A0FF", backgroundColor: "#242833" }}
+        >
+          <Image
+            src="/fighting.png"
+            width={300}
+            height={300}
+            alt="Fighting"
+            className="w-full h-full object-contain p-4"
+          />
+        </div>
       </div>
+
       {/* Bottom Section: Gallery + Total Ranking */}
       <div className="flex-1 grid grid-cols-11 gap-6">
         {/* Gallery Section */}
@@ -223,7 +239,9 @@ export default function DashboardPage() {
               borderTopRightRadius: "14px",
             }}
           >
-            Total Ranking
+            <Link href="/">
+              Total Ranking
+            </Link>
           </div>
           <div className="relative flex-1">
             <table className="w-full border-collapse">
@@ -261,8 +279,8 @@ export default function DashboardPage() {
             </table>
             {/* Vertical lines overlay for full height */}
             <div className="pointer-events-none absolute inset-0">
-              <div className="absolute top-0 bottom-0 left-[3rem] w-px bg-white" />
-              <div className="absolute top-0 bottom-0 right-[5rem] w-px bg-white" />
+              <div className="absolute top-0 bottom-0 left-12 w-px bg-white" />
+              <div className="absolute top-0 bottom-0 right-20 w-px bg-white" />
             </div>
           </div>
         </div>
