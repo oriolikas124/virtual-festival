@@ -207,7 +207,7 @@ export default function Page() {
                             ))}
                         </motion.div>
 
-                        {/* Nút quay lại */}
+                        {/* Back button */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: nodeHistory.length > 0 ? 1 : 0.3 }}

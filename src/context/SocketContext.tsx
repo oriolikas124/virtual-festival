@@ -112,8 +112,16 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
         // If accessing via IP or custom hostname, use that IP for server connection
         if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+          // Use same protocol as the page (https or http)
           const url = `${protocol}//${hostname}:3001`;
           console.log("🌐 Using IP connection:", url);
+          return url;
+        }
+        
+        // For localhost, check if we're on HTTPS
+        if (protocol === "https:") {
+          const url = `https://${hostname}:3001`;
+          console.log("🔒 Using HTTPS localhost connection:", url);
           return url;
         }
       }

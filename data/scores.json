@@ -5,23 +5,28 @@
       "name": "Player",
       "score": 100,
       "timestamp": 1764215157886
+    },
+    {
+      "name": "たあ",
+      "score": 84,
+      "timestamp": 1764899761086
+    },
+    {
+      "name": "しぼ",
+      "score": 57,
+      "timestamp": 1764901214436
+    },
+    {
+      "name": "Ami",
+      "score": 42,
+      "timestamp": 1764901286077
     }
   ],
   "zone_3": [
     {
-      "name": "2",
-      "score": 160,
-      "timestamp": 1764898534161
-    },
-    {
-      "name": "22",
-      "score": 80,
-      "timestamp": 1764895626968
-    },
-    {
-      "name": "ww",
-      "score": 80,
-      "timestamp": 1764898925018
+      "name": "しぼ",
+      "score": 107,
+      "timestamp": 1764901434333
     },
     {
       "name": "Player",
@@ -29,13 +34,24 @@
       "timestamp": 1764215206971
     }
   ],
-  "zone_4": [],
-  "zone_6": [
+  "zone_4": [
     {
-      "name": "e",
-      "score": 1190,
-      "timestamp": 1764897415633
+      "name": "Ami",
+      "score": 60,
+      "timestamp": 1764900953293
     },
+    {
+      "name": "しぼ",
+      "score": 60,
+      "timestamp": 1764900972011
+    },
+    {
+      "name": "たあ",
+      "score": 20,
+      "timestamp": 1764899651860
+    }
+  ],
+  "zone_6": [
     {
       "name": "33",
       "score": 100,

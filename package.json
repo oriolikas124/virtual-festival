@@ -10,6 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "server": "node server/index.js",
+    "server:https": "node server/index-https.js",
     "dev:server": "nodemon server/index.js"
   },
   "dependencies": {

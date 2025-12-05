@@ -116,8 +116,16 @@ export const VenueMap = () => {
             if (typeof window !== 'undefined') {
                 const hostname = window.location.hostname;
                 const protocol = window.location.protocol;
+                
+                // If accessing via IP or custom hostname, use that IP for server connection
                 if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+                    // Use same protocol as the page (https or http)
                     return `${protocol}//${hostname}:3001`;
+                }
+                
+                // For localhost, check if we're on HTTPS
+                if (protocol === 'https:') {
+                    return `https://${hostname}:3001`;
                 }
             }
             return 'http://localhost:3001';
@@ -126,7 +134,8 @@ export const VenueMap = () => {
         const socket = io(getServerUrl(), {
             reconnection: true,
             reconnectionDelay: 1000,
-            reconnectionAttempts: 5
+            reconnectionAttempts: 5,
+            transports: ['websocket', 'polling'],
         });
 
         socket.on('connect', () => {
@@ -178,71 +187,71 @@ export const VenueMap = () => {
                     });
 
                     // Function to convert cartesian to isometric coordinates
-                    const cartesianToIsometric = (cartX: number, cartY: number) => {
-                        const isoX = (cartX - cartY);
-                        const isoY = (cartX + cartY) / 2;
-                        return { x: isoX, y: isoY };
-                    };
+                    // const cartesianToIsometric = (cartX: number, cartY: number) => {
+                    //     const isoX = (cartX - cartY);
+                    //     const isoY = (cartX + cartY) / 2;
+                    //     return { x: isoX, y: isoY };
+                    // };
 
                     // Helper function to draw isometric zone
-                    const drawIsometricZone = (obj: Phaser.Types.Tilemaps.TiledObject, color: number) => {
-                        if (obj.x === undefined || obj.y === undefined || !obj.width || !obj.height) return;
+                    // const drawIsometricZone = (obj: Phaser.Types.Tilemaps.TiledObject, color: number) => {
+                    //     if (obj.x === undefined || obj.y === undefined || !obj.width || !obj.height) return;
                         
-                        const graphics = this.add.graphics();
-                        graphics.lineStyle(3, color, 1);
+                    //     const graphics = this.add.graphics();
+                    //     graphics.lineStyle(3, color, 1);
 
-                        const x = obj.x;
-                        const y = obj.y;
-                        const w = obj.width;
-                        const h = obj.height;
+                    //     const x = obj.x;
+                    //     const y = obj.y;
+                    //     const w = obj.width;
+                    //     const h = obj.height;
 
-                        // Convert 4 corners to isometric
-                        const topLeft = cartesianToIsometric(x, y);
-                        const topRight = cartesianToIsometric(x + w, y);
-                        const bottomRight = cartesianToIsometric(x + w, y + h);
-                        const bottomLeft = cartesianToIsometric(x, y + h);
+                    //     // Convert 4 corners to isometric
+                    //     const topLeft = cartesianToIsometric(x, y);
+                    //     const topRight = cartesianToIsometric(x + w, y);
+                    //     const bottomRight = cartesianToIsometric(x + w, y + h);
+                    //     const bottomLeft = cartesianToIsometric(x, y + h);
 
-                        // Draw isometric diamond/rhombus
-                        graphics.beginPath();
-                        graphics.moveTo(topLeft.x, topLeft.y);
-                        graphics.lineTo(topRight.x, topRight.y);
-                        graphics.lineTo(bottomRight.x, bottomRight.y);
-                        graphics.lineTo(bottomLeft.x, bottomLeft.y);
-                        graphics.closePath();
-                        graphics.strokePath();
-                        graphics.setDepth(50);
-                    };
+                    //     // Draw isometric diamond/rhombus
+                    //     graphics.beginPath();
+                    //     graphics.moveTo(topLeft.x, topLeft.y);
+                    //     graphics.lineTo(topRight.x, topRight.y);
+                    //     graphics.lineTo(bottomRight.x, bottomRight.y);
+                    //     graphics.lineTo(bottomLeft.x, bottomLeft.y);
+                    //     graphics.closePath();
+                    //     graphics.strokePath();
+                    //     graphics.setDepth(50);
+                    // };
 
-                    // Zone colors mapping
-                    const zoneColors: Record<string, number> = {
-                        'zone1': 0xff0000,  // Red
-                        'zone2': 0xff8800,  // Orange
-                        'zone3': 0xffff00,  // Yellow
-                        'zone4': 0x00ff00,  // Green
-                        'zone5': 0x0088ff,  // Blue
-                        'zone6': 0xff00ff,  // Magenta
-                        'spawn_zone': 0x00ff00, // Green
-                    };
+                    // // Zone colors mapping
+                    // const zoneColors: Record<string, number> = {
+                    //     'zone1': 0xff0000,  // Red
+                    //     'zone2': 0xff8800,  // Orange
+                    //     'zone3': 0xffff00,  // Yellow
+                    //     'zone4': 0x00ff00,  // Green
+                    //     'zone5': 0x0088ff,  // Blue
+                    //     'zone6': 0xff00ff,  // Magenta
+                    //     'spawn_zone': 0x00ff00, // Green
+                    // };
 
                     // Render zones from object layer
-                    const zonesLayer = map.getObjectLayer('zones');
-                    if (zonesLayer) {
-                        zonesLayer.objects.forEach((obj) => {
-                            if (obj.name && zoneColors[obj.name]) {
-                                drawIsometricZone(obj, zoneColors[obj.name]);
-                            }
-                        });
-                    }
+                    // const zonesLayer = map.getObjectLayer('zones');
+                    // if (zonesLayer) {
+                    //     zonesLayer.objects.forEach((obj) => {
+                    //         if (obj.name && zoneColors[obj.name]) {
+                    //             drawIsometricZone(obj, zoneColors[obj.name]);
+                    //         }
+                    //     });
+                    // }
 
-                    // Render spawn_zone from object layer
-                    const spawnLayer = map.getObjectLayer('spawn');
-                    if (spawnLayer) {
-                        spawnLayer.objects.forEach((obj) => {
-                            if (obj.name === 'spawn_zone') {
-                                drawIsometricZone(obj, zoneColors['spawn_zone']);
-                            }
-                        });
-                    }
+                    // // Render spawn_zone from object layer
+                    // const spawnLayer = map.getObjectLayer('spawn');
+                    // if (spawnLayer) {
+                    //     spawnLayer.objects.forEach((obj) => {
+                    //         if (obj.name === 'spawn_zone') {
+                    //             drawIsometricZone(obj, zoneColors['spawn_zone']);
+                    //         }
+                    //     });
+                    // }
 
                     // Helper function to draw polygon (for walkable areas)
                     // Same conversion as zones: Cartesian -> Isometric
