@@ -844,6 +844,22 @@ export default function NattoGamePage() {
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 bg-theme-purple text-white rounded-full font-semibold text-sm pointer-events-none">
               混ぜ具合: {mixingQuality}%
             </div>
+
+            {/* START button - positioned below the bowl */}
+            <AnimatePresence>
+              {!hasMixingStarted && (
+                <motion.div
+                  className="absolute top-[70%] left-1/2 transform -translate-x-1/2 z-50"
+                  initial={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <button className="px-6 py-2 bg-theme-yellow text-theme-brown rounded-full font-bold text-lg shadow-md border-2 border-theme-brown">
+                    START
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
