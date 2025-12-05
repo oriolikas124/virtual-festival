@@ -849,12 +849,12 @@ export default function NattoGamePage() {
             <AnimatePresence>
               {!hasMixingStarted && (
                 <motion.div
-                  className="absolute top-[70%] left-1/2 transform -translate-x-1/2 z-50"
+                  className="absolute top-[77%] left-1/2 transform -translate-x-1/2 z-50"
                   initial={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <button className="px-6 py-2 bg-theme-yellow text-theme-brown rounded-full font-bold text-lg shadow-md border-2 border-theme-brown">
+                  <button className="px-6 py-1 bg-theme-yellow text-theme-brown rounded-full font-bold text-lg shadow-md border-none">
                     START
                   </button>
                 </motion.div>
