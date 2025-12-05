@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback, useRef } from 'react';
-import Header from '@/components/layout/Header';
-import Link from 'next/link';
-import { useSocket } from '@/context/SocketContext';
+import { useEffect, useState, useCallback, useRef } from "react";
+import Header from "@/components/layout/Header";
+import Link from "next/link";
+import { useSocket } from "@/context/SocketContext";
 
 interface JoystickPosition {
   x: number;
@@ -12,25 +12,37 @@ interface JoystickPosition {
   angle: number;
 }
 
-type StateType = 'intro' | 'joystick';
+type StateType = "intro" | "joystick";
 
 // Zone information mapping
 const zoneInfo: Record<string, { name: string; color: string }> = {
-  zone1: { name: '着物トライオン', color: 'bg-red-500' },
-  zone2: { name: '山手線クイズ', color: 'bg-orange-500' },
-  zone3: { name: 'アナウンスクイズ', color: 'bg-yellow-500' },
-  zone4: { name: '富士山パズル', color: 'bg-green-500' },
-  zone5: { name: '鹿せんべい', color: 'bg-blue-500' },
-  zone6: { name: '納豆混ぜ', color: 'bg-purple-500' },
+  zone1: { name: "着物トライオン", color: "bg-red-500" },
+  zone2: { name: "山手線クイズ", color: "bg-orange-500" },
+  zone3: { name: "アナウンスクイズ", color: "bg-yellow-500" },
+  zone4: { name: "富士山パズル", color: "bg-green-500" },
+  zone5: { name: "鹿せんべい", color: "bg-blue-500" },
+  zone6: { name: "納豆混ぜ", color: "bg-purple-500" },
 };
 
 export default function ControllerPage() {
-  const { socket, isConnected, setNickname, isNicknameSet, setIsNicknameSet, currentZone } = useSocket();
-  const [currentState, setCurrentState] = useState<StateType>('intro');
-  const [tempNickname, setTempNickname] = useState('');
+  const {
+    socket,
+    isConnected,
+    setNickname,
+    isNicknameSet,
+    setIsNicknameSet,
+    currentZone,
+  } = useSocket();
+  const [currentState, setCurrentState] = useState<StateType>("intro");
+  const [tempNickname, setTempNickname] = useState("");
 
   // Joystick state
-  const [joystickPosition, setJoystickPosition] = useState<JoystickPosition>({ x: 0, y: 0, distance: 0, angle: 0 });
+  const [joystickPosition, setJoystickPosition] = useState<JoystickPosition>({
+    x: 0,
+    y: 0,
+    distance: 0,
+    angle: 0,
+  });
   const [isDragging, setIsDragging] = useState(false);
   const joystickRef = useRef<HTMLDivElement>(null);
   const knobRef = useRef<HTMLDivElement>(null);
@@ -38,7 +50,7 @@ export default function ControllerPage() {
   // Update state when nickname is set
   useEffect(() => {
     if (isNicknameSet && isConnected) {
-      setCurrentState('joystick');
+      setCurrentState("joystick");
     }
   }, [isNicknameSet, isConnected]);
 
@@ -51,32 +63,38 @@ export default function ControllerPage() {
   }, [tempNickname, setNickname, setIsNicknameSet]);
 
   // Handle Enter key in nickname input
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleNicknameConfirm();
-    }
-  }, [handleNicknameConfirm]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        handleNicknameConfirm();
+      }
+    },
+    [handleNicknameConfirm]
+  );
 
   // Send movement to server based on joystick position
-  const sendMovement = useCallback((position: JoystickPosition) => {
-    if (socket && isConnected && position.distance > 0.1) {
-      // Send continuous movement data with constant speed
-      const normalizedX = Math.cos(position.angle * Math.PI / 180);
-      const normalizedY = Math.sin(position.angle * Math.PI / 180);
+  const sendMovement = useCallback(
+    (position: JoystickPosition) => {
+      if (socket && isConnected && position.distance > 0.1) {
+        // Send continuous movement data with constant speed
+        const normalizedX = Math.cos((position.angle * Math.PI) / 180);
+        const normalizedY = Math.sin((position.angle * Math.PI) / 180);
 
-      const vectorData = {
-        x: normalizedX,
-        y: normalizedY,
-        angle: position.angle,
-        speed: 1 // Constant speed instead of distance-based
-      };
+        const vectorData = {
+          x: normalizedX,
+          y: normalizedY,
+          angle: position.angle,
+          speed: 1, // Constant speed instead of distance-based
+        };
 
-      socket.emit('moveVector', vectorData);
-    } else if (socket && isConnected && position.distance <= 0.1) {
-      // Stop movement when joystick is released
-      socket.emit('moveVector', { x: 0, y: 0, angle: 0, speed: 0 });
-    }
-  }, [socket, isConnected]);
+        socket.emit("moveVector", vectorData);
+      } else if (socket && isConnected && position.distance <= 0.1) {
+        // Stop movement when joystick is released
+        socket.emit("moveVector", { x: 0, y: 0, angle: 0, speed: 0 });
+      }
+    },
+    [socket, isConnected]
+  );
 
   // Continuous movement while joystick is held
   useEffect(() => {
@@ -97,110 +115,136 @@ export default function ControllerPage() {
   }, [isDragging, joystickPosition, sendMovement]);
 
   // Calculate joystick position
-  const calculateJoystickPosition = useCallback((clientX: number, clientY: number): JoystickPosition => {
-    if (!joystickRef.current) return { x: 0, y: 0, distance: 0, angle: 0 };
+  const calculateJoystickPosition = useCallback(
+    (clientX: number, clientY: number): JoystickPosition => {
+      if (!joystickRef.current) return { x: 0, y: 0, distance: 0, angle: 0 };
 
-    const rect = joystickRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+      const rect = joystickRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
 
-    const deltaX = clientX - centerX;
-    const deltaY = clientY - centerY;
+      const deltaX = clientX - centerX;
+      const deltaY = clientY - centerY;
 
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const maxDistance = rect.width / 2 - 20; // Leave some margin
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const maxDistance = rect.width / 2 - 20; // Leave some margin
 
-    const limitedDistance = Math.min(distance, maxDistance);
-    const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+      const limitedDistance = Math.min(distance, maxDistance);
+      const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
 
-    const normalizedDistance = limitedDistance / maxDistance;
+      const normalizedDistance = limitedDistance / maxDistance;
 
-    const limitedX = (deltaX / distance) * limitedDistance;
-    const limitedY = (deltaY / distance) * limitedDistance;
+      const limitedX = (deltaX / distance) * limitedDistance;
+      const limitedY = (deltaY / distance) * limitedDistance;
 
-    return {
-      x: isNaN(limitedX) ? 0 : limitedX,
-      y: isNaN(limitedY) ? 0 : limitedY,
-      distance: normalizedDistance,
-      angle: angle
-    };
-  }, []);
+      return {
+        x: isNaN(limitedX) ? 0 : limitedX,
+        y: isNaN(limitedY) ? 0 : limitedY,
+        distance: normalizedDistance,
+        angle: angle,
+      };
+    },
+    []
+  );
 
   // Mouse events
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    setIsDragging(true);
-    const position = calculateJoystickPosition(e.clientX, e.clientY);
-    setJoystickPosition(position);
-    // Send movement immediately for responsiveness
-    sendMovement(position);
-  }, [calculateJoystickPosition, sendMovement]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      setIsDragging(true);
+      const position = calculateJoystickPosition(e.clientX, e.clientY);
+      setJoystickPosition(position);
+      // Send movement immediately for responsiveness
+      sendMovement(position);
+    },
+    [calculateJoystickPosition, sendMovement]
+  );
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isDragging) return;
 
-    const position = calculateJoystickPosition(e.clientX, e.clientY);
-    setJoystickPosition(position);
-    // Send movement immediately when position changes
-    sendMovement(position);
-  }, [isDragging, calculateJoystickPosition, sendMovement]);
+      const position = calculateJoystickPosition(e.clientX, e.clientY);
+      setJoystickPosition(position);
+      // Send movement immediately when position changes
+      sendMovement(position);
+    },
+    [isDragging, calculateJoystickPosition, sendMovement]
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
     setJoystickPosition({ x: 0, y: 0, distance: 0, angle: 0 });
     // Send stop command immediately
     if (socket && isConnected) {
-      socket.emit('moveVector', { x: 0, y: 0, angle: 0, speed: 0 });
+      socket.emit("moveVector", { x: 0, y: 0, angle: 0, speed: 0 });
     }
   }, [socket, isConnected]);
 
   // Touch events
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-    const touch = e.touches[0];
-    const position = calculateJoystickPosition(touch.clientX, touch.clientY);
-    setJoystickPosition(position);
-    // Send movement immediately for responsiveness
-    sendMovement(position);
-  }, [calculateJoystickPosition, sendMovement]);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      e.preventDefault();
+      setIsDragging(true);
+      const touch = e.touches[0];
+      const position = calculateJoystickPosition(touch.clientX, touch.clientY);
+      setJoystickPosition(position);
+      // Send movement immediately for responsiveness
+      sendMovement(position);
+    },
+    [calculateJoystickPosition, sendMovement]
+  );
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
 
-    const touch = e.touches[0];
-    const position = calculateJoystickPosition(touch.clientX, touch.clientY);
-    setJoystickPosition(position);
-    // Send movement immediately when position changes
-    sendMovement(position);
-  }, [isDragging, calculateJoystickPosition, sendMovement]);
+      const touch = e.touches[0];
+      const position = calculateJoystickPosition(touch.clientX, touch.clientY);
+      setJoystickPosition(position);
+      // Send movement immediately when position changes
+      sendMovement(position);
+    },
+    [isDragging, calculateJoystickPosition, sendMovement]
+  );
 
-  const handleTouchEnd = useCallback((e: TouchEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    setJoystickPosition({ x: 0, y: 0, distance: 0, angle: 0 });
-    // Send stop command immediately
-    if (socket && isConnected) {
-      socket.emit('moveVector', { x: 0, y: 0, angle: 0, speed: 0 });
-    }
-  }, [socket, isConnected]);
+  const handleTouchEnd = useCallback(
+    (e: TouchEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
+      setJoystickPosition({ x: 0, y: 0, distance: 0, angle: 0 });
+      // Send stop command immediately
+      if (socket && isConnected) {
+        socket.emit("moveVector", { x: 0, y: 0, angle: 0, speed: 0 });
+      }
+    },
+    [socket, isConnected]
+  );
 
   // Global event listeners
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd, { passive: false });
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+      document.addEventListener("touchend", handleTouchEnd, { passive: false });
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
+  }, [
+    isDragging,
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchMove,
+    handleTouchEnd,
+  ]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 backdrop-blur-sm">
@@ -209,30 +253,34 @@ export default function ControllerPage() {
       {/* Main content */}
       <main className="flex flex-col items-center justify-between gap-16 w-full flex-1 px-6 text-center">
         {/* INTRO STATE */}
-        {currentState === 'intro' && (
+        {currentState === "intro" && (
           <div className="flex flex-col items-center justify-center w-full">
-            <div className='w-full mt-8'>
+            <div className="w-full mt-8">
               <div className="flex flex-col items-center">
-                <h1 className='w-full text-2xl bg-theme-purple font-bold py-4'>Welcome to <br />  Virtual Festival</h1>
-                <p className='w-full text-lg bg-theme-yellow py-2'>祭りを楽しむためのニックネームを入力してください</p>
+                <h1 className="w-full text-2xl bg-theme-purple font-bold py-4">
+                  Welcome to <br /> Virtual Festival
+                </h1>
+                <p className="w-full text-lg bg-theme-yellow py-2">
+                  祭りを楽しむためのニックネームを入力してください
+                </p>
               </div>
             </div>
 
-            <div className='w-full space-y-4 mt-32'>
+            <div className="w-full space-y-4 mt-32">
               <input
-                type='text'
+                type="text"
                 value={tempNickname}
                 onChange={(e) => setTempNickname(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder='ニックネームを入力...'
+                placeholder="ニックネームを入力..."
                 maxLength={20}
-                className='w-full px-6 py-4 text-lg text-white rounded-lg border-2 border-theme-purple focus:outline-none focus:border-theme-yellow'
+                className="w-full px-6 py-4 text-lg text-white rounded-lg border-2 border-theme-purple focus:outline-none focus:border-theme-yellow"
                 autoFocus
               />
               <button
                 onClick={handleNicknameConfirm}
                 disabled={!tempNickname.trim()}
-                className='w-fit px-8 py-10 bg-linear-to-tr from-[#2E3D54] from-60% to-[#4a6590] text-theme-yellow font-bold text-2xl rounded-full border border-theme-purple active:scale-95 transition-transform'
+                className="w-fit px-8 py-10 bg-linear-to-tr from-[#2E3D54] from-60% to-[#4a6590] text-theme-yellow font-bold text-2xl rounded-full border border-theme-purple active:scale-95 transition-transform"
               >
                 入場
               </button>
@@ -241,19 +289,29 @@ export default function ControllerPage() {
         )}
 
         {/* JOYSTICK STATE */}
-        {currentState === 'joystick' && (
+        {currentState === "joystick" && (
           <>
             {/* Banner space */}
             <div className="flex flex-col items-center mb-8 space-y-4">
-              <div className='w-full rounded-sm text-xl bg-theme-purple py-4 px-2 mt-8'>
+              <div className="w-full rounded-sm text-xl bg-theme-purple py-4 px-2 mt-8">
                 <h2>ジョイスティックを使って、祭りを楽しもう！</h2>
               </div>
-              
+
               {/* Zone trigger button - only show when in a zone */}
-              <div className={`w-full h-16 flex justify-center items-center mt-8 transition-opacity duration-300 ${currentZone && zoneInfo[currentZone] ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              <div
+                className={`w-full h-16 flex justify-center items-center mt-8 transition-opacity duration-300 ${
+                  currentZone && zoneInfo[currentZone]
+                    ? "opacity-100"
+                    : "opacity-0 pointer-events-none"
+                }`}
+              >
                 {currentZone && zoneInfo[currentZone] && (
-                  <Link href={`/controller/${currentZone.replace('zone', 'zone_')}`}>
-                    <button className={`p-4 px-8 ${zoneInfo[currentZone].color} rounded-xl text-white font-bold text-xl shadow-lg border-2 border-white/50 transition-transform active:scale-95 animate-bounce`}>
+                  <Link
+                    href={`/controller/${currentZone.replace("zone", "zone_")}`}
+                  >
+                    <button
+                      className={`p-4 px-8 ${zoneInfo[currentZone].color} rounded-xl text-white font-bold text-xl shadow-lg border-2 border-white/50 transition-transform active:scale-95 animate-bounce`}
+                    >
                       {zoneInfo[currentZone].name} に入る
                     </button>
                   </Link>
@@ -274,15 +332,12 @@ export default function ControllerPage() {
                     ref={knobRef}
                     className="joystick-knob"
                     style={{
-                      transform: `translate(${joystickPosition.x}px, ${joystickPosition.y}px)`
+                      transform: `translate(${joystickPosition.x}px, ${joystickPosition.y}px)`,
                     }}
-                  >
-                  </div>
+                  ></div>
                 </div>
               </div>
             </div>
-
-            
           </>
         )}
       </main>
@@ -302,8 +357,12 @@ export default function ControllerPage() {
           </div>
         )} */}
         <div className="status-indicator text-white">
-          <div className={`connection-status ${isConnected ? 'connected' : 'disconnected'}`}></div>
-          {isConnected ? '🟢 Connected to Festival' : '🔴 Connecting...'}
+          <div
+            className={`connection-status ${
+              isConnected ? "connected" : "disconnected"
+            }`}
+          ></div>
+          {isConnected ? "🟢 Connected to Festival" : "🔴 Connecting..."}
         </div>
       </div>
 
@@ -315,7 +374,7 @@ export default function ControllerPage() {
           align-items: center;
           padding: 2rem;
         }
-        
+
         .joystick-base {
           width: 200px;
           height: 200px;
@@ -324,13 +383,12 @@ export default function ControllerPage() {
           border: 3px solid #999;
           position: relative;
           cursor: pointer;
-          box-shadow: 
-            inset 0 0 20px rgba(0,0,0,0.1),
-            0 4px 8px rgba(0,0,0,0.2);
+          box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1),
+            0 4px 8px rgba(0, 0, 0, 0.2);
           touch-action: none;
           user-select: none;
         }
-        
+
         .joystick-knob {
           position: relative;
           width: 60px;
@@ -346,15 +404,15 @@ export default function ControllerPage() {
           align-items: center;
           justify-content: center;
           font-size: 1.2rem;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
           transition: background-color 0.1s ease;
           pointer-events: none;
         }
-        
+
         .joystick-knob:active {
           cursor: grabbing;
         }
-        
+
         .joystick-info {
           text-align: center;
           margin-top: 1rem;
@@ -363,13 +421,13 @@ export default function ControllerPage() {
           padding: 1rem;
           border-radius: 8px;
         }
-        
+
         @media (max-width: 480px) {
           .joystick-base {
             width: 180px;
             height: 180px;
           }
-          
+
           .joystick-knob {
             width: 50px;
             height: 50px;

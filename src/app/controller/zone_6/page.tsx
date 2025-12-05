@@ -1,8 +1,17 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Header from "@/components/layout/Header";
 import BackBtn from "@/components/ui/BackBtn";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Sticker selection based on score
+const getResultSticker = (score: number): string => {
+  if (score >= 300) return "/Emoji/やった.png";
+  if (score >= 200) return "/Emoji/verygood.png";
+  if (score >= 100) return "/Emoji/いいね.png";
+  return "/Emoji/残念.png";
+};
 
 // Dynamically import Phaser only on client side
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -651,7 +660,7 @@ export default function NattoGamePage() {
   useEffect(() => {
     if (gameState !== "result") {
       setScore(0);
-      setTimeLeft(3);
+      setTimeLeft(30);
       setMixingQuality(0);
       setHasMixingStarted(false);
       timerStarted.current = false;
@@ -694,7 +703,16 @@ export default function NattoGamePage() {
               className="flex flex-col items-center space-y-6"
             >
               <div className="space-y-4 p-6 bg-theme-purple rounded-3xl">
-                <h1 className="text-2xl font-bold mb-4">納豆を混ぜ</h1>
+                <div className="relative flex items-center justify-center">
+                  <h1 className="text-2xl font-bold">納豆を混ぜ</h1>
+                  <Image
+                    src="/Emoji/頑張れ.png"
+                    alt="頑張れ"
+                    width={70}
+                    height={70}
+                    className="absolute -right-0 -top-4"
+                  />
+                </div>
                 <p className="text-lg text-gray-900 font-bold leading-relaxed">
                   指で円を描いて納豆をかき混ぜよう！
                   <br />
@@ -725,13 +743,73 @@ export default function NattoGamePage() {
               transition={{ duration: 0.3 }}
               className="flex flex-col items-center space-y-6"
             >
-              <div className="space-y-4 p-6 bg-theme-purple rounded-2xl">
-                <h1 className="text-2xl font-bold">Congratulations!</h1>
-                <p className="text-lg text-gray-900 font-bold leading-relaxed">
-                  {score} points!
-                  <br />
-                  <br />
-                </p>
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 15,
+                  delay: 0.2,
+                }}
+              >
+                <Image
+                  src={getResultSticker(score)}
+                  alt="Result sticker"
+                  width={300}
+                  height={300}
+                  className="drop-shadow-lg"
+                />
+              </motion.div>
+              <div className="space-y-4 p-6 bg-theme-purple rounded-2xl relative overflow-hidden">
+                {/* Rainbow Congratulations */}
+                <h1 className="text-2xl font-bold flex justify-center flex-wrap">
+                  {"Congratulations!".split("").map((letter, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ y: -20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{
+                        delay: 0.5 + i * 0.05,
+                        type: "spring",
+                        stiffness: 300,
+                      }}
+                      style={{
+                        color: [
+                          "#FF0000",
+                          "#FF6600",
+                          "#FFCC00",
+                          "#00CC00",
+                          "#0099FF",
+                          "#6600FF",
+                          "#FF0099",
+                          "#FF0000",
+                          "#FF6600",
+                          "#FFCC00",
+                          "#00CC00",
+                          "#0099FF",
+                          "#6600FF",
+                          "#FF0099",
+                          "#FF0000",
+                        ][i % 15],
+                      }}
+                      className="inline-block drop-shadow-md"
+                    >
+                      {letter === " " ? "\u00A0" : letter}
+                    </motion.span>
+                  ))}
+                </h1>
+
+                <div className="relative">
+                  <motion.p
+                    className="text-lg text-gray-900 font-bold leading-relaxed"
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
+                  >
+                    {score} points!
+                  </motion.p>
+                </div>
               </div>
               <button
                 onClick={() => setGameState("description")}

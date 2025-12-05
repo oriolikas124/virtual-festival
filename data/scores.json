@@ -9,6 +9,21 @@
   ],
   "zone_3": [
     {
+      "name": "2",
+      "score": 160,
+      "timestamp": 1764898534161
+    },
+    {
+      "name": "22",
+      "score": 80,
+      "timestamp": 1764895626968
+    },
+    {
+      "name": "ww",
+      "score": 80,
+      "timestamp": 1764898925018
+    },
+    {
       "name": "Player",
       "score": 40,
       "timestamp": 1764215206971
@@ -16,6 +31,11 @@
   ],
   "zone_4": [],
   "zone_6": [
+    {
+      "name": "e",
+      "score": 1190,
+      "timestamp": 1764897415633
+    },
     {
       "name": "33",
       "score": 100,
@@ -40,6 +60,11 @@
       "name": "44",
       "score": 40,
       "timestamp": 1764291009508
+    },
+    {
+      "name": "ww",
+      "score": 10,
+      "timestamp": 1764898866346
     }
   ]
 }
