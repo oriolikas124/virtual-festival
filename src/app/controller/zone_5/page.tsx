@@ -39,6 +39,7 @@ export default function Page() {
     const [videoPlaying, setVideoPlaying] = useState(false);
     const [endingType, setEndingType] = useState<string>("");
     const [videoKey, setVideoKey] = useState<number>(0);
+    const [nodeHistory, setNodeHistory] = useState<string[]>([]);
 
     // Load story data
     useEffect(() => {
@@ -70,9 +71,24 @@ export default function Page() {
     };
 
     const handleChoice = (nextNodeId: string) => {
+        // Save current node to history
+        setNodeHistory(prev => [...prev, currentNodeId]);
         setCurrentNodeId(nextNodeId);
         setVideoPlaying(true);
         // Reset video key to trigger fade animation
+        setVideoKey(prev => prev + 1);
+    };
+
+    const goBack = () => {
+        if (nodeHistory.length === 0) return;
+        
+        // Get the previous node ID
+        const previousNodeId = nodeHistory[nodeHistory.length - 1];
+        // Remove that node from history
+        setNodeHistory(prev => prev.slice(0, -1));
+        // Go back to the previous node
+        setCurrentNodeId(previousNodeId);
+        setVideoPlaying(false);
         setVideoKey(prev => prev + 1);
     };
 
@@ -86,6 +102,7 @@ export default function Page() {
         setCurrentNodeId(storyData?.start || "");
         setEndingType("");
         setVideoPlaying(false);
+        setNodeHistory([]);
     };
 
     const renderContent = () => {
@@ -188,6 +205,25 @@ export default function Page() {
                                     {choice.text}
                                 </button>
                             ))}
+                        </motion.div>
+
+                        {/* Nút quay lại */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: nodeHistory.length > 0 ? 1 : 0.3 }}
+                            className="mt-4"
+                        >
+                            <button
+                                onClick={goBack}
+                                disabled={nodeHistory.length === 0}
+                                className={`px-6 py-2 rounded-full font-semibold text-center transition-all ${
+                                    nodeHistory.length > 0
+                                        ? "bg-gray-600 text-white active:scale-95"
+                                        : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                                }`}
+                            >
+                                ← 前の選択に戻る
+                            </button>
                         </motion.div>
                     </motion.div>
                 );
