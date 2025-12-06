@@ -27,6 +27,9 @@ app.use(
   })
 );
 
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, "../public")));
+
 // Socket.io configuration - Simple for development
 const io = new Server(server, {
   cors: {
@@ -549,12 +552,129 @@ io.on("connection", (socket) => {
 
 // HTTP routes
 app.get("/", (req, res) => {
-  res.json({
-    message: "🎎 Virtual Festival Server (HTTPS)",
-    status: "running",
-    players: Object.keys(gameState.players).length,
-    uptime: process.uptime(),
-  });
+  const uptimeSeconds = process.uptime();
+  const hours = Math.floor(uptimeSeconds / 3600);
+  const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+  const seconds = Math.floor(uptimeSeconds % 60);
+  const uptimeFormatted = `${hours}h ${minutes}m ${seconds}s`;
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Virtual Festival Server</title>
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+          min-height: 100vh;
+          padding: 20px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #fff;
+        }
+        .container {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          padding: 40px;
+          text-align: center;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 { font-size: 2rem; margin-bottom: 20px; color: #fff; }
+        .status {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(46, 213, 115, 0.2);
+          padding: 8px 16px;
+          border-radius: 20px;
+          margin-bottom: 30px;
+        }
+        .status-dot {
+          width: 10px;
+          height: 10px;
+          background: #2ed573;
+          border-radius: 50%;
+          animation: pulse 2s infinite;
+        }
+        .notice {
+          font-size: 1.5rem;
+          line-height: 1.5;
+          font-weight: bold;
+          margin-bottom: 20px;
+          color: #dff9fb;
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        .stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+          margin-top: 20px;
+        }
+        .stat-box {
+          background: rgba(255, 255, 255, 0.05);
+          padding: 20px;
+          border-radius: 12px;
+        }
+        .stat-value {
+          font-size: 32px;
+          font-weight: bold;
+          color: #feca57;
+        }
+        .stat-label {
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.7);
+          margin-top: 5px;
+        }
+        .footer {
+          margin-top: 30px;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.5);
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="logo">
+          <img src="/logo.svg" alt="Virtual Festival" width="250" height="auto">
+        </div>
+        <h1>Virtual Festival Server</h1>
+        <div class="status">
+          <div class="status-dot"></div>
+          <span>Running</span>
+        </div>
+        <div class="notice">
+          サーバーに接続しました。</br>
+          このページを閉じてStep 3.に進んでください。
+        </div>
+        <div class="stats">
+          <div class="stat-box">
+            <div class="stat-value">${
+              Object.keys(gameState.players).length
+            }</div>
+            <div class="stat-label">Players Online</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value">${uptimeFormatted}</div>
+            <div class="stat-label">Uptime</div>
+          </div>
+        </div>
+        <div class="footer">
+          Socket.io server ready • Port ${PORT}
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
 app.get("/status", (req, res) => {

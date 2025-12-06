@@ -304,7 +304,9 @@ export const VenueMap = () => {
                     this.cameras.main.scrollX = worldX - (this.scale.width / 2);
                     this.cameras.main.scrollY = worldY - (this.scale.height / 2);
 
-                    this.cameras.main.setZoom(1);
+                    // Scale up for larger displays (27 inch)
+                    // Default to 1.4 for better visibility
+                    this.cameras.main.setZoom(1.4);
                 }
 
                 update() {
