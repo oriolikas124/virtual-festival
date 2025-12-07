@@ -6,55 +6,28 @@ Modern browsers (especially mobile Safari and Chrome) require HTTPS for accessin
 
 ## Setup Instructions
 
-### Step 1: Generate Self-Signed Certificate
+### Step 1: Run Development Server with HTTPS
 
-**On Windows:**
-```cmd
-generate-cert.bat
-```
-
-**On Mac/Linux:**
-```bash
-chmod +x generate-cert.sh
-./generate-cert.sh
-```
-
-This will create two files:
-- `localhost-key.pem` (private key)
-- `localhost-cert.pem` (certificate)
-
-⚠️ **IMPORTANT:** Add these files to `.gitignore` - DO NOT commit them!
-
-### Step 2: Run Development Server with HTTPS
+Certificate files are already included in the repository, so you can run immediately:
 
 ```bash
 npm run dev:https
 ```
 
-The server will start at:
-- `https://localhost:3000`
-- `https://<your-local-ip>:3000`
+---
 
-### Step 3: Accept Self-Signed Certificate
+# カメラアクセス用HTTPS開発環境セットアップ
 
-#### On Desktop Browser (First Time):
-1. Navigate to `https://localhost:3000`
-2. You'll see a security warning
-3. Click "Advanced" → "Proceed to localhost (unsafe)"
-4. This is safe for local development
+## HTTPSが必要な理由
 
-#### On Mobile Device:
-1. Find your computer's local IP address:
-   - Windows: `ipconfig` (look for IPv4 Address)
-   - Mac/Linux: `ifconfig` or `ip addr`
-2. Navigate to `https://<your-ip>:3000` on your phone
-3. You'll see a security warning
-4. On iOS Safari: Tap "Show Details" → "visit this website"
-5. On Android Chrome: Tap "Advanced" → "Proceed to [IP] (unsafe)"
+最新のブラウザ（特にモバイルのSafariやChrome）は、セキュリティ上の理由から、カメラやマイクへのアクセスにHTTPSを必要とします。モバイルデバイスからIPアドレス（例：`192.168.1.x:3000`）で開発サーバーにアクセスする場合、HTTPSがないと`navigator.mediaDevices`が`undefined`になります。
 
-### Step 4: Test Camera Access
+## セットアップ手順
 
-Now when you click "Enable Camera" on the app, it should:
-✅ Show the permission dialog
-✅ Access the camera successfully
-✅ Mirror the video preview
+### ステップ1：HTTPSで開発サーバーを起動
+
+証明書ファイルはリポジトリに含まれているので、すぐに実行できます：
+
+```bash
+npm run dev:https
+```
