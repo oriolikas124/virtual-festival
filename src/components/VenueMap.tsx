@@ -306,7 +306,7 @@ export const VenueMap = () => {
 
                     // Scale up for larger displays (27 inch)
                     // Default to 1.4 for better visibility
-                    this.cameras.main.setZoom(1.4);
+                    this.cameras.main.setZoom(1);
                 }
 
                 update() {
