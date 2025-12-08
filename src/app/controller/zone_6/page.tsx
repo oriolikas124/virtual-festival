@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Header from "@/components/layout/Header";
 import BackBtn from "@/components/ui/BackBtn";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Sticker selection based on score
@@ -811,12 +812,12 @@ export default function NattoGamePage() {
                   </motion.p>
                 </div>
               </div>
-              <button
-                onClick={() => setGameState("description")}
-                className="px-8 py-3 bg-theme-yellow rounded-full font-semibold active:scale-95 transition-transform"
+              <Link
+                href="/controller/"
+                className="px-8 py-3 bg-theme-yellow text-black rounded-full font-semibold active:scale-95 transition-transform"
               >
-                もう一度挑戦
-              </button>
+                コントローラーに戻る
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>

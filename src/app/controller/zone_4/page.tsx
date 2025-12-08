@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import * as headbreaker from "headbreaker";
 import Header from "@/components/layout/Header";
 // import MuteBtn from '@/components/ui/MuteBtn';
@@ -41,11 +41,32 @@ export default function Zone4() {
 
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
 
-  useEffect(() => {
-    const width = Math.min(800, window.innerWidth - 32);
-    const height = Math.floor(width * 0.75);
-    setCanvasSize({ width, height });
+  // Responsive canvas size calculation
+  const calculateCanvasSize = useCallback(() => {
+    const vw = window.innerWidth;
+    const isTablet = vw >= 768;
+
+    let width: number;
+
+    if (isTablet) {
+      // Tablet portrait
+      width = Math.min(vw - 48, 700);
+    } else {
+      // Phone
+      width = Math.min(vw - 32, 500);
+    }
+
+    const height = width * 0.75;
+    setCanvasSize({ width: Math.floor(width), height: Math.floor(height) });
   }, []);
+
+  useEffect(() => {
+    calculateCanvasSize();
+    window.addEventListener("resize", calculateCanvasSize);
+    return () => {
+      window.removeEventListener("resize", calculateCanvasSize);
+    };
+  }, [calculateCanvasSize]);
 
   // Save score when puzzle is finished
   useEffect(() => {
@@ -307,18 +328,21 @@ export default function Zone4() {
   const startBg = imageList[level] ?? "";
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+    <div className="flex flex-col min-h-[100dvh] bg-gradient-to-b from-[#1a1f2e] to-[#0d1117]">
       <Header />
-      <div className="w-full h-16 flex items-center justify-between px-4">
+
+      {/* Navigation bar */}
+      <div className="shrink-0 w-full h-12 md:h-14 flex items-center justify-between px-4 md:px-6">
         <BackBtn />
         {/* <MuteBtn /> */}
       </div>
 
-      <main className="relative flex flex-col items-center justify-center w-full flex-1 px-4 text-center space-y-4">
+      {/* Main content area */}
+      <main className="flex-1 flex items-center justify-center px-4 md:px-6 pb-4 overflow-hidden">
         {/* スタートページ */}
         {showStart && !isFinished && (
           <div
-            className="relative rounded-2xl overflow-hidden shadow-lg"
+            className="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl max-w-full"
             style={{
               width: `${canvasSize.width}px`,
               height: `${canvasSize.height}px`,
@@ -333,44 +357,87 @@ export default function Zone4() {
                 filter: "blur(8px) brightness(0.7)",
               }}
             />
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-              <div className="w-fit bg-theme-purple rounded-3xl px-8 py-6 mb-4 text-[#1f2430] shadow">
-                <h1 className="text-2xl font-bold mb-4">富士山パズルゲーム</h1>
-                <p className="text-lg leading-relaxed">
-                  次のパズルを解いてください。
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-8">
+              <div className="w-fit bg-theme-purple rounded-2xl md:rounded-3xl px-6 md:px-10 py-4 md:py-8 mb-4 md:mb-6 text-black text-center shadow-xl">
+                <h1 className="text-xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">
+                  富士山パズルゲーム
+                </h1>
+                <p className="text-base md:text-lg lg:text-xl leading-relaxed">
+                  次のパズルを解いてください
                   <br />
-                  早いほどポイントが取れます。
+                  早いほどポイントが取れます
                 </p>
               </div>
               <button
                 onClick={handleStart}
-                className="px-8 py-3 bg-theme-yellow rounded-full font-semibold"
+                className="px-8 md:px-12 py-3 md:py-4 bg-theme-yellow rounded-full font-semibold text-base md:text-lg active:scale-95 transition-transform shadow-lg hover:shadow-xl"
               >
-                Start
+                スタート
               </button>
             </div>
           </div>
         )}
 
+        {/* Game UI */}
         {!showStart && !isFinished && (
-          <div className="flex items-center gap-2 text-lg text-white/90">
-            <div className="px-3 py-1 rounded bg-white/10">
-              Time: {formatTime(totalSeconds)}
+          <div className="flex flex-col gap-3 items-center justify-center w-full max-w-[700px]">
+            {/* Top controls bar */}
+            <div className="flex items-center justify-center gap-2 md:gap-4 flex-wrap">
+              <div className="flex items-center gap-3 md:gap-4 px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+                <div className="flex items-center gap-2">
+                  <span className="text-white/60 text-sm md:text-base">⏱</span>
+                  <span className="text-white font-mono font-bold md:text-lg">{formatTime(totalSeconds)}</span>
+                </div>
+                <div className="w-px h-4 md:h-5 bg-white/20" />
+                <div className="flex items-center gap-2">
+                  <span className="text-white/60 text-sm md:text-base">★</span>
+                  <span className="text-theme-yellow font-mono font-bold md:text-lg">{score}</span>
+                </div>
+                <div className="w-px h-4 md:h-5 bg-white/20" />
+                <span className="text-white/80 text-sm md:text-base">
+                  Lv.{Math.min(level + 1, imageList.length)}/{imageList.length}
+                </span>
+              </div>
+              <button
+                onClick={handleSkip}
+                className="px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl bg-red-500/80 text-white text-sm md:text-base font-semibold active:scale-[0.98]"
+              >
+                Skip
+              </button>
             </div>
-            <div className="px-3 py-1 rounded bg-white/10">Score: {score}</div>
-            <button
-              onClick={handleSkip}
-              className="px-3 py-1 ml-2 rounded-full bg-red-500/90 text-white active:scale-[0.98]"
-            >
-              Skip
-            </button>
+
+            {/* Preview image - always visible */}
+            <div className="w-full bg-white/5 rounded-xl md:rounded-2xl border border-white/10 p-2 md:p-3">
+              <div
+                className="w-full rounded-lg md:rounded-xl overflow-hidden"
+                style={{
+                  aspectRatio: "4/3",
+                  backgroundImage: `url(${imageList[level]})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
+            </div>
+
+            {/* Puzzle canvas */}
+            <div
+              ref={puzzleRef}
+              id="puzzle"
+              className="relative rounded-xl md:rounded-2xl overflow-hidden shadow-xl"
+              style={{
+                width: `${canvasSize.width}px`,
+                height: `${canvasSize.height}px`,
+                backgroundColor: "rgba(100,100,120,0.3)",
+                border: "2px solid rgba(255,255,255,0.1)",
+              }}
+            />
           </div>
         )}
 
-        {/* 結算 */}
-        {isFinished ? (
+        {/* 結算 - Finish screen */}
+        {isFinished && (
           <div
-            className="relative rounded-2xl overflow-hidden shadow-lg"
+            className="relative rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl"
             style={{
               width: `${canvasSize.width}px`,
               height: `${canvasSize.height}px`,
@@ -385,36 +452,30 @@ export default function Zone4() {
                 filter: "blur(6px) brightness(0.8)",
               }}
             />
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-              <div className="text-5xl font-bold text-white mb-4">
-                Congratulation
+            <div className="absolute inset-0 bg-black/30" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-8">
+              <div className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-3 md:mb-4 drop-shadow-lg">
+                🎉 Congratulation!
               </div>
-              <div className="text-xl text-white font-bold">
-                <span className="text-2xl text-red-500 font-bold mr-1">
+              <div className="text-lg md:text-xl text-white font-medium mb-2">
+                <span className="text-2xl md:text-3xl text-red-400 font-bold mr-1">
                   {formatTime(totalSeconds)}
                 </span>
-                秒でクリアしました！
+                でクリアしました！
               </div>
-              <div className="text-4xl font-bold text-green-500">
+              <div className="text-3xl md:text-5xl font-bold text-green-400 mb-6 md:mb-8 drop-shadow-lg">
                 {score} Points
               </div>
 
-              <div className="mt-6 flex gap-3">
-                {/* <button
-                  onClick={handleRestart}
-                  className="px-4 py-2 rounded-lg bg-white/80 text-[#1f2430] font-semibold active:scale-[0.98]"
-                >
-                  Restart
-                </button> */}
-                <Link
-                  href="/controller/"
-                  className="px-8 py-3 bg-theme-yellow text-black rounded-lg font-semibold"
-                >
-                  コントローラーに戻る
-                </Link>
-              </div>
+              <Link
+                href="/controller/"
+                className="px-8 md:px-12 py-3 md:py-4 bg-theme-yellow text-black rounded-xl md:rounded-2xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-shadow active:scale-[0.98]"
+              >
+                コントローラーに戻る
+              </Link>
             </div>
 
+            {/* Confetti animation */}
             <style jsx>{`
               @keyframes confetti {
                 0% {
@@ -433,12 +494,12 @@ export default function Zone4() {
             {[...Array(24)].map((_, i) => (
               <span
                 key={i}
-                className="absolute"
+                className="absolute pointer-events-none"
                 style={{
                   top: `${Math.random() * 20 - 10}%`,
                   left: `${(i / 24) * 100}%`,
-                  width: "3px",
-                  height: `${6 + Math.random() * 16}px`,
+                  width: "4px",
+                  height: `${8 + Math.random() * 20}px`,
                   background: [
                     "#ff4d4f",
                     "#36cfc9",
@@ -446,49 +507,13 @@ export default function Zone4() {
                     "#73d13d",
                     "#faad14",
                   ][i % 5],
-                  animation: `confetti ${
-                    2.8 + Math.random()
-                  }s ease-in forwards`,
+                  animation: `confetti ${2.8 + Math.random()}s ease-in forwards`,
                   animationDelay: `${Math.random() * 0.6}s`,
+                  borderRadius: "2px",
                 }}
               />
             ))}
           </div>
-        ) : (
-          !showStart && (
-            <>
-              {!isFinished && (
-                <div className="w-full bg-white/10 rounded-xl border border-white/20 p-3">
-                  <div
-                    className="rounded-lg"
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      backgroundImage: `url(${imageList[level]})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      aspectRatio: "4/3",
-                    }}
-                  />
-                </div>
-              )}
-              <div
-                ref={puzzleRef}
-                id="puzzle"
-                className="relative"
-                style={{
-                  width: `${canvasSize.width}px`,
-                  height: `${canvasSize.height}px`,
-                  backgroundColor: "rgba(128,128,128,0.5)",
-                  border: "1px solid #3a3f4a",
-                }}
-              />
-              <div className="text-md font-semibold text-white/90">
-                レベル：{Math.min(level + 1, imageList.length)} /{" "}
-                {imageList.length}
-              </div>
-            </>
-          )
         )}
       </main>
     </div>

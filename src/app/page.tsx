@@ -19,19 +19,22 @@ export default function Home() {
           <div>
             <div className="flex justify-center gap-10 mt-12">
               <Link
-                href="/dashboard"
-                className="block mt-8 text-center text-2xl bg-white text-gray-800 px-6 py-3 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg"
-              >
-                Dashboard
-              </Link>
-              <Link
                 href="/qrpage"
+                target='_blank'
                 className="block mt-8 text-center text-2xl bg-white text-gray-800 px-6 py-3 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg"
               >
                 QR Page
               </Link>
               <Link
+                href="/dashboard"
+                target='_blank'
+                className="block mt-8 text-center text-2xl bg-white text-gray-800 px-6 py-3 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg"
+              >
+                Dashboard
+              </Link>
+              <Link
                 href="/venue"
+                target='_blank'
                 className="block mt-8 text-center text-2xl bg-white text-gray-800 px-6 py-3 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg"
               >
                 Venue
