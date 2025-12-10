@@ -41,8 +41,12 @@
 ### セットアップ手順
 
 1.  リポジトリをクローン
-2.  プロジェクトフォルダでターミナルを開き  **「npm install」**実行
-3.  開発サーバ起動（2 つのターミナル必要）
+2.  プロジェクトフォルダでターミナルを開き
+
+   ```bash
+   npm install
+   ```
+4.  開発サーバ起動（2 つのターミナル必要）
 
    ターミナル 1：
    ```bash
@@ -54,14 +58,14 @@
    npm run server:https
    ```
 
-1.  PC ブラウザで以下を開く   モニター ① → https://localhost:3000/venue 　 ← 会場マップ画面   モニター ② → https://localhost:3000/qrpage   or /dashboard  ← QR ＋ダッシュボード画面
+1.  PC ブラウザで以下を開く   モニター ① → **[https://localhost:3000/venue]** 　 ← 会場マップ画面   モニター ② → **[https://localhost:3000/qrpage]**   or [/dashboard]  ← QR ＋ダッシュボード画面
 2.  「src/app/qrpage/page.tsx」を開き
 
-「WIFI_QR_TEXT」の内容を自分の環境に変更 **\[S:Wifi の名;P:パスワード;\]**
+「WIFI_QR_TEXT」の内容を自分の環境に変更 **[S:Wifi の名;P:パスワード;]**
 
-「SERVER_QR_TEXT」の内容を自分の環境に変更 **\[https://000.000.0.0:3001\]**
+「SERVER_QR_TEXT」の内容を自分の環境に変更 **[https://000.000.0.0:3001]**
 
-「FESTIVAL_QR_TEXT」の内容を自分の PC の IPv4 のアドレスに変更    **\[https://000.000.0.0:3000/controller\]**
+「FESTIVAL_QR_TEXT」の内容を自分の PC の IPv4 のアドレスに変更    **[https://000.000.0.0:3000/controller]**
 
 1.  スマホでモニター ② に表示されている 3 つの QR コードを順番にスキャン → 自動で同一 Wi-Fi に接続 → サーバー接続 → コントローラー画面へ遷移
 2.  スマホでニックネーム入力 → 「入場」ボタン → 体験開始！🎉
