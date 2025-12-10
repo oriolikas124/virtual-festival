@@ -6,12 +6,12 @@ import BackBtn from "@/components/ui/BackBtn";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Sticker selection based on score
+// Sticker selection based on score (1 point per rotation, ~45-90 points in 30s)
 const getResultSticker = (score: number): string => {
-  if (score >= 300) return "/Emoji/やった.png";
-  if (score >= 200) return "/Emoji/verygood.png";
-  if (score >= 100) return "/Emoji/いいね.png";
-  return "/Emoji/残念.png";
+  if (score >= 90) return "/Emoji/やった.png";      // 70+ rotations - excellent!
+  if (score >= 70) return "/Emoji/verygood.png";   // 50+ rotations - great!
+  if (score >= 50) return "/Emoji/いいね.png";      // 30+ rotations - good
+  return "/Emoji/残念.png";                         // needs more practice
 };
 
 // Dynamically import Phaser only on client side
@@ -596,7 +596,7 @@ export default function NattoGamePage() {
 
         const totalDegrees = Math.abs((this.totalRotation * 180) / Math.PI);
         const completeRotations = Math.floor(totalDegrees / 360);
-        const newScore = completeRotations * 10;
+        const newScore = completeRotations * 1;
 
         scoreRef.current = newScore;
         setScore(newScore);
@@ -711,7 +711,7 @@ export default function NattoGamePage() {
                     alt="頑張れ"
                     width={70}
                     height={70}
-                    className="absolute -right-0 -top-4"
+                    className="absolute right-0 -top-4"
                   />
                 </div>
                 <p className="text-lg text-gray-900 font-bold leading-relaxed">

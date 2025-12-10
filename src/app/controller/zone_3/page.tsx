@@ -39,7 +39,7 @@ export default function Page() {
   const [QData, setQData] = useState<Question[]>([]);
   const [currentState, setCurrentState] = useState<StateType>("start");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [miniTimer, setMiniTimer] = useState(30);
+  const [miniTimer, setMiniTimer] = useState(20);
   const [totalTimer, setTotalTimer] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -206,7 +206,7 @@ export default function Page() {
         setMiniTimer((prev) => {
           if (prev <= 1) {
             handleTimeout();
-            return 30;
+            return 20;
           }
           return prev - 1;
         });
@@ -253,9 +253,9 @@ export default function Page() {
       const timeLeft = miniTimer;
       let score = 0;
 
-      if (timeLeft > 20) score = currentQuestion.scores[4];
-      else if (timeLeft > 15) score = currentQuestion.scores[3];
-      else if (timeLeft > 10) score = currentQuestion.scores[2];
+      if (timeLeft > 15) score = currentQuestion.scores[4];
+      else if (timeLeft > 12) score = currentQuestion.scores[3];
+      else if (timeLeft > 9) score = currentQuestion.scores[2];
       else if (timeLeft > 5) score = currentQuestion.scores[1];
       else score = currentQuestion.scores[0];
 

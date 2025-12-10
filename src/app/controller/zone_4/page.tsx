@@ -19,6 +19,16 @@ function formatTime(totalSeconds: number) {
   return `${m}:${ss}`;
 }
 
+// Calculate score based on time taken for each puzzle
+// Fast completion = more points
+const calculatePuzzleScore = (seconds: number): number => {
+  if (seconds <= 40) return 70;      // Very fast: 70 points
+  if (seconds <= 50) return 55;      // Fast: 55 points
+  if (seconds <= 60) return 40;      // Normal: 40 points
+  if (seconds <= 70) return 25;      // Slow: 25 points
+  return 15;                          // Very slow: 15 points
+};
+
 export default function Zone4() {
   const puzzleRef = useRef<HTMLDivElement>(null);
 
@@ -30,10 +40,18 @@ export default function Zone4() {
   const [showStart, setShowStart] = useState(true);
 
   const [totalSeconds, setTotalSeconds] = useState(0);
+  const [puzzleSeconds, setPuzzleSeconds] = useState(0); // Timer for current puzzle
+  const [lastPuzzleScore, setLastPuzzleScore] = useState(0); // Score earned for last puzzle
   const [ticking, setTicking] = useState(false);
 
   const connectedRef = useRef<Set<string>>(new Set());
   const scoreRef = useRef(0);
+  const puzzleSecondsRef = useRef(0); // Ref to track puzzle time for scoring
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    puzzleSecondsRef.current = puzzleSeconds;
+  }, [puzzleSeconds]);
 
   useEffect(() => {
     connectedRef.current = new Set();
@@ -96,11 +114,24 @@ export default function Zone4() {
     }
   }, [isFinished]);
 
+  // Total timer
   useEffect(() => {
     if (!ticking) return;
     const id = setInterval(() => setTotalSeconds((t) => t + 1), 1000);
     return () => clearInterval(id);
   }, [ticking]);
+
+  // Puzzle timer - reset when level changes
+  useEffect(() => {
+    if (!ticking || showNextPrompt) return;
+    const id = setInterval(() => setPuzzleSeconds((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, [ticking, level, showNextPrompt]);
+
+  // Reset puzzle timer when starting a new puzzle
+  useEffect(() => {
+    setPuzzleSeconds(0);
+  }, [level]);
 
   useEffect(() => {
     const container = puzzleRef.current;
@@ -266,16 +297,19 @@ export default function Zone4() {
 
       canvas.attachSolvedValidator();
       canvas.onValid(() => {
+        const earnedScore = calculatePuzzleScore(puzzleSecondsRef.current);
+        setLastPuzzleScore(earnedScore);
+        
         if (level < imageList.length - 1) {
           setScore((s) => {
-            const newScore = s + 20;
+            const newScore = s + earnedScore;
             scoreRef.current = newScore;
             return newScore;
           });
           setShowNextPrompt(true);
         } else {
           setScore((s) => {
-            const newScore = s + 20;
+            const newScore = s + earnedScore;
             scoreRef.current = newScore;
             return newScore;
           });
@@ -328,7 +362,7 @@ export default function Zone4() {
   const startBg = imageList[level] ?? "";
 
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-gradient-to-b from-[#1a1f2e] to-[#0d1117]">
+    <div className="flex flex-col min-h-screen bg-linear-to-b from-[#1a1f2e] to-[#0d1117]">
       <Header />
 
       {/* Navigation bar */}
@@ -386,7 +420,7 @@ export default function Zone4() {
               <div className="flex items-center gap-3 md:gap-4 px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
                 <div className="flex items-center gap-2">
                   <span className="text-white/60 text-sm md:text-base">⏱</span>
-                  <span className="text-white font-mono font-bold md:text-lg">{formatTime(totalSeconds)}</span>
+                  <span className="text-white font-mono font-bold md:text-lg">{formatTime(puzzleSeconds)}</span>
                 </div>
                 <div className="w-px h-4 md:h-5 bg-white/20" />
                 <div className="flex items-center gap-2">
@@ -430,7 +464,23 @@ export default function Zone4() {
                 backgroundColor: "rgba(100,100,120,0.3)",
                 border: "2px solid rgba(255,255,255,0.1)",
               }}
-            />
+            >
+              {/* Score popup when puzzle completed */}
+              {showNextPrompt && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+                  <div className="text-center animate-bounce">
+                    <div className="text-4xl md:text-6xl font-bold text-green-400 drop-shadow-lg">
+                      +{lastPuzzleScore}
+                    </div>
+                    <div className="text-lg md:text-xl text-white mt-2">
+                      {puzzleSecondsRef.current <= 20 ? "⚡ 超速い！" : 
+                       puzzleSecondsRef.current <= 35 ? "🔥 速い！" : 
+                       puzzleSecondsRef.current <= 50 ? "👍 いいね！" : "✓ クリア！"}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
