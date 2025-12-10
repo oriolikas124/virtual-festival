@@ -8,10 +8,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Sticker selection based on score (1 point per rotation, ~45-90 points in 30s)
 const getResultSticker = (score: number): string => {
-  if (score >= 90) return "/Emoji/やった.png";      // 70+ rotations - excellent!
-  if (score >= 70) return "/Emoji/verygood.png";   // 50+ rotations - great!
-  if (score >= 50) return "/Emoji/いいね.png";      // 30+ rotations - good
-  return "/Emoji/残念.png";                         // needs more practice
+  if (score >= 90) return "/Emoji/やった.png"; // 70+ rotations - excellent!
+  if (score >= 70) return "/Emoji/verygood.png"; // 50+ rotations - great!
+  if (score >= 50) return "/Emoji/いいね.png"; // 30+ rotations - good
+  return "/Emoji/残念.png"; // needs more practice
 };
 
 // Dynamically import Phaser only on client side

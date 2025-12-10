@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
 import Header from "@/components/layout/Header";
 import Link from "next/link";
 import { useSocket } from "@/context/SocketContext";
@@ -15,13 +17,40 @@ interface JoystickPosition {
 type StateType = "intro" | "joystick";
 
 // Zone information mapping
-const zoneInfo: Record<string, { name: string; color: string }> = {
-  zone1: { name: "着物トライオン", color: "bg-red-500" },
-  zone2: { name: "山手線クイズ", color: "bg-orange-500" },
-  zone3: { name: "アナウンスクイズ", color: "bg-yellow-500" },
-  zone4: { name: "富士山パズル", color: "bg-green-500" },
-  zone5: { name: "鹿せんべい", color: "bg-blue-500" },
-  zone6: { name: "納豆混ぜ", color: "bg-purple-500" },
+const zoneInfo: Record<
+  string,
+  { name: string; color: string; thumbnail: string }
+> = {
+  zone1: {
+    name: "着物トライオン",
+    color: "bg-red-500",
+    thumbnail: "/images/Thumbnails/01_Kimono.png",
+  },
+  zone2: {
+    name: "山手線クイズ",
+    color: "bg-orange-500",
+    thumbnail: "/images/Thumbnails/02_Train.png",
+  },
+  zone3: {
+    name: "アナウンスクイズ",
+    color: "bg-yellow-500",
+    thumbnail: "/images/Thumbnails/03_.png",
+  },
+  zone4: {
+    name: "富士山パズル",
+    color: "bg-green-500",
+    thumbnail: "/images/Thumbnails/04_FujiSan.png",
+  },
+  zone5: {
+    name: "鹿せんべい",
+    color: "bg-blue-500",
+    thumbnail: "/images/Thumbnails/05_Deer.png",
+  },
+  zone6: {
+    name: "納豆混ぜ",
+    color: "bg-purple-500",
+    thumbnail: "/images/Thumbnails/06_Natto.png",
+  },
 };
 
 export default function ControllerPage() {
@@ -299,7 +328,7 @@ export default function ControllerPage() {
 
               {/* Zone trigger button - only show when in a zone */}
               <div
-                className={`w-full h-16 flex justify-center items-center mt-8 transition-opacity duration-300 ${
+                className={`w-full h-16 flex justify-center items-center mt-24 transition-opacity duration-300 ${
                   currentZone && zoneInfo[currentZone]
                     ? "opacity-100"
                     : "opacity-0 pointer-events-none"
@@ -309,11 +338,24 @@ export default function ControllerPage() {
                   <Link
                     href={`/controller/${currentZone.replace("zone", "zone_")}`}
                   >
-                    <button
-                      className={`p-4 px-8 ${zoneInfo[currentZone].color} rounded-xl text-white font-bold text-xl shadow-lg border-2 border-white/50 transition-transform active:scale-95 animate-bounce`}
+                    <motion.div
+                      className="relative group cursor-pointer transition-transform active:scale-95"
+                      animate={{ y: [0, -20, 0] }}
+                      transition={{
+                        duration: 0.8,
+                        repeat: Infinity,
+                        ease: "easeOut",
+                        times: [0, 0.3, 1],
+                      }}
                     >
-                      {zoneInfo[currentZone].name} に入る
-                    </button>
+                      <Image
+                        src={zoneInfo[currentZone].thumbnail}
+                        alt={zoneInfo[currentZone].name}
+                        width={600}
+                        height={600}
+                        className="w-66 h-66 object-contain transition-all"
+                      />
+                    </motion.div>
                   </Link>
                 )}
               </div>

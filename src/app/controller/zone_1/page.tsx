@@ -167,8 +167,14 @@ export default function Page() {
     // Draw cropped video to portrait canvas
     ctx.drawImage(
       video,
-      cropX, cropY, cropWidth, cropHeight,
-      0, 0, canvas.width, canvas.height
+      cropX,
+      cropY,
+      cropWidth,
+      cropHeight,
+      0,
+      0,
+      canvas.width,
+      canvas.height
     );
 
     // JPEG quality 0.52 - optimal balance between upload size and quality
@@ -208,13 +214,13 @@ export default function Page() {
     try {
       // Convert base64 to Blob and check size
       let base64Image = capturedImage.split(",")[1];
-      const blobSize = Buffer.byteLength(base64Image, 'base64') / 1024; // KB
+      const blobSize = Buffer.byteLength(base64Image, "base64") / 1024; // KB
 
-      console.log('[CLIENT] Image size:', blobSize.toFixed(2), 'KB');
+      console.log("[CLIENT] Image size:", blobSize.toFixed(2), "KB");
 
       // If image > 500KB, compress further using canvas
       if (blobSize > 500) {
-        console.log('[CLIENT] Image too large, compressing...');
+        console.log("[CLIENT] Image too large, compressing...");
         const canvas = canvasRef.current;
         if (canvas) {
           // Create a new smaller canvas
@@ -224,13 +230,21 @@ export default function Page() {
             canvas.width = canvas.width * scaleFactor;
             canvas.height = canvas.height * scaleFactor;
 
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
+            const tempCanvas = document.createElement("canvas");
+            const tempCtx = tempCanvas.getContext("2d");
             if (tempCtx) {
               tempCanvas.width = Math.floor(canvas.width * scaleFactor);
               tempCanvas.height = Math.floor(canvas.height * scaleFactor);
-              tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
-              base64Image = tempCanvas.toDataURL("image/jpeg", 0.5).split(",")[1];
+              tempCtx.drawImage(
+                canvas,
+                0,
+                0,
+                tempCanvas.width,
+                tempCanvas.height
+              );
+              base64Image = tempCanvas
+                .toDataURL("image/jpeg", 0.5)
+                .split(",")[1];
             }
           }
         }
@@ -432,7 +446,12 @@ export default function Page() {
                   disabled={!isCameraReady || isLoadingCamera}
                   className="w-full flex justify-center gap-2 py-3 px-6 bg-theme-yellow rounded-xl font-medium disabled:bg-gray-300 disabled:cursor-not-allowed active:scale-95 transition-transform"
                 >
-                  <Image src="/icons/camera.svg" width={24} height={24} alt="写真を撮る" />
+                  <Image
+                    src="/icons/camera.svg"
+                    width={24}
+                    height={24}
+                    alt="写真を撮る"
+                  />
                   <span>写真を撮る</span>
                 </button>
               )}
@@ -474,9 +493,7 @@ export default function Page() {
                       onClick={() => generateKimono(style)}
                       className="p-6 border-2 bg-theme-yellow border-gray-300 rounded-lg"
                     >
-                      <span className="text-xl font-semibold">
-                        {style}
-                      </span>
+                      <span className="text-xl font-semibold">{style}</span>
                     </motion.button>
                   ))}
                 </div>

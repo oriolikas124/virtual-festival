@@ -22,11 +22,11 @@ function formatTime(totalSeconds: number) {
 // Calculate score based on time taken for each puzzle
 // Fast completion = more points
 const calculatePuzzleScore = (seconds: number): number => {
-  if (seconds <= 40) return 70;      // Very fast: 70 points
-  if (seconds <= 50) return 55;      // Fast: 55 points
-  if (seconds <= 60) return 40;      // Normal: 40 points
-  if (seconds <= 70) return 25;      // Slow: 25 points
-  return 15;                          // Very slow: 15 points
+  if (seconds <= 40) return 70; // Very fast: 70 points
+  if (seconds <= 50) return 55; // Fast: 55 points
+  if (seconds <= 60) return 40; // Normal: 40 points
+  if (seconds <= 70) return 25; // Slow: 25 points
+  return 15; // Very slow: 15 points
 };
 
 export default function Zone4() {
@@ -299,7 +299,7 @@ export default function Zone4() {
       canvas.onValid(() => {
         const earnedScore = calculatePuzzleScore(puzzleSecondsRef.current);
         setLastPuzzleScore(earnedScore);
-        
+
         if (level < imageList.length - 1) {
           setScore((s) => {
             const newScore = s + earnedScore;
@@ -420,12 +420,16 @@ export default function Zone4() {
               <div className="flex items-center gap-3 md:gap-4 px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
                 <div className="flex items-center gap-2">
                   <span className="text-white/60 text-sm md:text-base">⏱</span>
-                  <span className="text-white font-mono font-bold md:text-lg">{formatTime(puzzleSeconds)}</span>
+                  <span className="text-white font-mono font-bold md:text-lg">
+                    {formatTime(puzzleSeconds)}
+                  </span>
                 </div>
                 <div className="w-px h-4 md:h-5 bg-white/20" />
                 <div className="flex items-center gap-2">
                   <span className="text-white/60 text-sm md:text-base">★</span>
-                  <span className="text-theme-yellow font-mono font-bold md:text-lg">{score}</span>
+                  <span className="text-theme-yellow font-mono font-bold md:text-lg">
+                    {score}
+                  </span>
                 </div>
                 <div className="w-px h-4 md:h-5 bg-white/20" />
                 <span className="text-white/80 text-sm md:text-base">
@@ -473,9 +477,13 @@ export default function Zone4() {
                       +{lastPuzzleScore}
                     </div>
                     <div className="text-lg md:text-xl text-white mt-2">
-                      {puzzleSecondsRef.current <= 20 ? "⚡ 超速い！" : 
-                       puzzleSecondsRef.current <= 35 ? "🔥 速い！" : 
-                       puzzleSecondsRef.current <= 50 ? "👍 いいね！" : "✓ クリア！"}
+                      {puzzleSecondsRef.current <= 20
+                        ? "⚡ 超速い！"
+                        : puzzleSecondsRef.current <= 35
+                        ? "🔥 速い！"
+                        : puzzleSecondsRef.current <= 50
+                        ? "👍 いいね！"
+                        : "✓ クリア！"}
                     </div>
                   </div>
                 </div>
@@ -557,7 +565,9 @@ export default function Zone4() {
                     "#73d13d",
                     "#faad14",
                   ][i % 5],
-                  animation: `confetti ${2.8 + Math.random()}s ease-in forwards`,
+                  animation: `confetti ${
+                    2.8 + Math.random()
+                  }s ease-in forwards`,
                   animationDelay: `${Math.random() * 0.6}s`,
                   borderRadius: "2px",
                 }}
