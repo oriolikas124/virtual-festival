@@ -291,8 +291,8 @@ export default function Page() {
             className="flex flex-col items-center space-y-6"
           >
             <div className="space-y-4 p-6 bg-theme-purple rounded-2xl">
-              <h1 className="text-2xl font-bold">着物試着へようこそ</h1>
-              <p className="text-lg text-gray-900 font-medium leading-relaxed">
+              <h1 className="text-3xl font-bold">着物トライオン</h1>
+              <p className="text-lg text-gray-900 font-semibold leading-relaxed">
                 この体験では、カメラで撮影したあなたの写真を使って、さまざまなスタイルの着物を仮想的に試着できます。準備ができたら、下の「始める」ボタンをクリックしてください。
               </p>
             </div>

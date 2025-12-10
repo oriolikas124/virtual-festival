@@ -705,7 +705,7 @@ export default function NattoGamePage() {
             >
               <div className="space-y-4 p-6 bg-theme-purple rounded-3xl">
                 <div className="relative flex items-center justify-center">
-                  <h1 className="text-2xl font-bold">納豆を混ぜ</h1>
+                  <h1 className="text-3xl font-bold">納豆を混ぜ</h1>
                   <Image
                     src="/Emoji/頑張れ.png"
                     alt="頑張れ"
@@ -714,7 +714,7 @@ export default function NattoGamePage() {
                     className="absolute right-0 -top-4"
                   />
                 </div>
-                <p className="text-lg text-gray-900 font-bold leading-relaxed">
+                <p className="text-lg text-gray-900 font-semibold leading-relaxed">
                   指で円を描いて納豆をかき混ぜよう！
                   <br />
                   制限時間内に速く

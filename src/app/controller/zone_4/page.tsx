@@ -393,10 +393,10 @@ export default function Zone4() {
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center p-4 md:p-8">
               <div className="w-fit bg-theme-purple rounded-2xl md:rounded-3xl px-6 md:px-10 py-4 md:py-8 mb-4 md:mb-6 text-black text-center shadow-xl">
-                <h1 className="text-xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">
+                <h1 className="text-3xl font-bold mb-4">
                   富士山パズルゲーム
                 </h1>
-                <p className="text-base md:text-lg lg:text-xl leading-relaxed">
+                <p className="text-lg font-semibold leading-relaxed text-gray-900">
                   次のパズルを解いてください
                   <br />
                   早いほどポイントが取れます

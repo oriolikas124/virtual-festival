@@ -117,10 +117,10 @@ export default function Page() {
             className="flex flex-col items-center justify-center gap-8"
           >
             <div className="space-y-4 p-6 bg-theme-purple rounded-3xl">
-              <h1 className="text-4xl font-bold mb-4">
+              <h1 className="text-3xl font-bold">
                 {storyData?.metadata.title}
               </h1>
-              <p className="text-lg font-semibold text-gray-800 mb-8 max-w-2xl">
+              <p className="text-lg font-semibold text-gray-800 leading-relaxed mb-8 max-w-2xl">
                 小鹿との出会いを体験してください。あなたの選択が物語を決めます。
               </p>
               <p className="text-md italic text-gray-800 max-w-2xl">

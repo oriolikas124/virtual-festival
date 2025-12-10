@@ -334,7 +334,7 @@ export default function Page() {
                   className="absolute -right-2 -top-4"
                 />
               </div>
-              <p className="text-lg font-semibold text-gray-900 max-w-md">
+              <p className="text-lg font-semibold leading-relaxed text-gray-900 max-w-md">
                 車内アナウンスを聞いて路線名を当てましょう！
                 <br />
                 各路線のアナウンスは声が少し違います。

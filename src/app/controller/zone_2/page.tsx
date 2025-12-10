@@ -254,7 +254,7 @@ export default function Page() {
           >
             <div className="space-y-4 p-6 bg-theme-purple rounded-3xl">
               <h1 className="text-3xl font-bold">山手線クイズ</h1>
-              <p className="text-lg font-semibold text-gray-900 max-w-md">
+              <p className="text-lg font-semibold leading-relaxed text-gray-900 max-w-md">
                 山手線について{QData.length}問のクイズです。
                 <br />
                 各問題は15秒以内に答えてください。
