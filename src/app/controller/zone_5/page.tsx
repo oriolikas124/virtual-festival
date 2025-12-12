@@ -5,6 +5,7 @@ import BackBtn from "@/components/ui/BackBtn";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Story from "@/../data/zone_5/story.json";
 
 type StateType = "intro" | "playing" | "result";
@@ -117,9 +118,18 @@ export default function Page() {
             className="flex flex-col items-center justify-center gap-8"
           >
             <div className="space-y-4 p-6 bg-theme-purple rounded-3xl">
-              <h1 className="text-3xl font-bold">
-                {storyData?.metadata.title}
-              </h1>
+              <div className="relative flex items-center justify-center">
+                <h1 className="text-3xl font-bold">
+                  {storyData?.metadata.title}
+                </h1>
+                <Image
+                  src="/Emoji/頑張れ.png"
+                  alt="頑張れ"
+                  width={70}
+                  height={70}
+                  className="absolute -right-2 -top-4"
+                />
+              </div>
               <p className="text-lg font-semibold text-gray-800 leading-relaxed mb-8 max-w-2xl">
                 小鹿との出会いを体験してください。あなたの選択が物語を決めます。
               </p>
@@ -247,17 +257,30 @@ export default function Page() {
       case "result":
         const endingText: Record<string, { title: string; message: string }> = {
           happy: {
-            title: "ハッピーエンディング 🎉",
+            title: "ハッピーエンディング",
             message: "小鹿と素敵な友達になりました！",
           },
           normal: {
-            title: "ノーマルエンディング 😊",
+            title: "ノーマルエンディング",
             message: "小鹿と普通の出会いを体験しました。",
           },
           bad: {
-            title: "バッドエンディング 😢",
+            title: "バッドエンディング",
             message: "小鹿に逃げられてしまいました...",
           },
+        };
+
+        const getEndingSticker = (type: string): string => {
+          switch (type) {
+            case "happy":
+              return "/Emoji/やった.png";
+            case "normal":
+              return "/Emoji/いいね.png";
+            case "bad":
+              return "/Emoji/残念.png";
+            default:
+              return "/Emoji/いいね.png";
+          }
         };
 
         const ending = endingText[endingType] || endingText.normal;
@@ -270,8 +293,173 @@ export default function Page() {
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center gap-8"
           >
-            <div className="space-y-4 p-6 bg-theme-purple rounded-3xl">
-              <h2 className="text-4xl font-bold mb-4">{ending.title}</h2>
+            <div className="space-y-4 p-6 bg-theme-purple rounded-3xl relative overflow-hidden">
+              {endingType === "happy" && (
+                <div className="absolute inset-0 pointer-events-none">
+                  {[...Array(20)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-2 h-2 rounded-full"
+                      style={{
+                        backgroundColor: [
+                          "#FF0000",
+                          "#FF6600",
+                          "#FFCC00",
+                          "#00CC00",
+                          "#0099FF",
+                          "#6600FF",
+                          "#FF0099",
+                          "#FFFFFF",
+                        ][i % 8],
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                      }}
+                      initial={{ y: 0, opacity: 0, scale: 0 }}
+                      animate={{
+                        y: -100 - Math.random() * 50,
+                        opacity: [0, 1, 1, 0],
+                        scale: [0, 1, 1, 0],
+                      }}
+                      transition={{
+                        duration: 2 + Math.random() * 2,
+                        delay: Math.random() * 2,
+                        repeat: Infinity,
+                        repeatDelay: 1 + Math.random() * 2,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center justify-center gap-4 mb-4 relative z-10">
+                {endingType === "happy" ? (
+                  <h2 className="text-4xl font-bold flex justify-center flex-wrap">
+                    {ending.title.split("").map((letter, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{
+                          delay: 0.3 + i * 0.05,
+                          type: "spring",
+                          stiffness: 300,
+                        }}
+                        style={{
+                          color: [
+                            "#FF0000",
+                            "#FF6600",
+                            "#FFCC00",
+                            "#00CC00",
+                            "#0099FF",
+                            "#6600FF",
+                            "#FF0099",
+                            "#FF0000",
+                            "#FF6600",
+                            "#FFCC00",
+                            "#00CC00",
+                            "#0099FF",
+                            "#6600FF",
+                            "#FF0099",
+                            "#FF0000",
+                          ][i % 15],
+                        }}
+                        className="inline-block drop-shadow-md"
+                      >
+                        {letter === " " ? "\u00A0" : letter}
+                      </motion.span>
+                    ))}
+                  </h2>
+                ) : endingType === "normal" ? (
+                  <h2 className="text-4xl font-bold flex justify-center flex-wrap">
+                    {ending.title.split("").map((letter, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{
+                          delay: 0.3 + i * 0.05,
+                          type: "spring",
+                          stiffness: 300,
+                        }}
+                        style={{
+                          color: [
+                            "#0066CC",
+                            "#1a237e",
+                            "#4a148c",
+                            "#6a1b9a",
+                            "#8e24aa",
+                            "#ba68c8",
+                            "#0066CC",
+                            "#1a237e",
+                            "#4a148c",
+                            "#6a1b9a",
+                            "#8e24aa",
+                            "#ba68c8",
+                            "#0066CC",
+                            "#1a237e",
+                          ][i % 14],
+                        }}
+                        className="inline-block drop-shadow-md"
+                      >
+                        {letter === " " ? "\u00A0" : letter}
+                      </motion.span>
+                    ))}
+                  </h2>
+                ) : (
+                  <h2 className="text-4xl font-bold flex justify-center flex-wrap">
+                    {ending.title.split("").map((letter, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{
+                          delay: 0.3 + i * 0.05,
+                          type: "spring",
+                          stiffness: 300,
+                        }}
+                        style={{
+                          color: [
+                            "#1a1a1a",
+                            "#2a2a2a",
+                            "#3a3a3a",
+                            "#4a4a4a",
+                            "#5a5a5a",
+                            "#6a6a6a",
+                            "#7a7a7a",
+                            "#8a8a8a",
+                            "#1a1a1a",
+                            "#2a2a2a",
+                            "#3a3a3a",
+                            "#4a4a4a",
+                            "#5a5a5a",
+                            "#6a6a6a",
+                          ][i % 14],
+                        }}
+                        className="inline-block drop-shadow-md"
+                      >
+                        {letter === " " ? "\u00A0" : letter}
+                      </motion.span>
+                    ))}
+                  </h2>
+                )}
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 15,
+                    delay: 0.5,
+                  }}
+                >
+                  <Image
+                    src={getEndingSticker(endingType)}
+                    alt="Ending sticker"
+                    width={70}
+                    height={70}
+                    className="drop-shadow-lg"
+                  />
+                </motion.div>
+              </div>
               <p className="text-xl text-gray-700 mb-8">{ending.message}</p>
             </div>
 

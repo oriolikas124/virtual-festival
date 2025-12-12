@@ -9,6 +9,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import quizData from "@/../data/zone_2/data.json";
 import Image from "next/image";
 
+// Sticker selection based on score (max 200 points in this zone)
+const getResultSticker = (score: number): string => {
+  if (score >= 120) return "/Emoji/やった.png";
+  if (score >= 80) return "/Emoji/verygood.png";
+  if (score >= 40) return "/Emoji/いいね.png";
+  return "/Emoji/残念.png";
+};
+
 interface Question {
   id: number;
   question: string;
@@ -253,7 +261,16 @@ export default function Page() {
             className="flex flex-col items-center space-y-6"
           >
             <div className="space-y-4 p-6 bg-theme-purple rounded-3xl">
-              <h1 className="text-3xl font-bold">山手線クイズ</h1>
+              <div className="relative flex items-center justify-center">
+                <h1 className="text-3xl font-bold">山手線クイズ</h1>
+                <Image
+                  src="/Emoji/頑張れ.png"
+                  alt="頑張れ"
+                  width={70}
+                  height={70}
+                  className="absolute -right-2 -top-4"
+                />
+              </div>
               <p className="text-lg font-semibold leading-relaxed text-gray-900 max-w-md">
                 山手線について{QData.length}問のクイズです。
                 <br />
@@ -413,19 +430,74 @@ export default function Page() {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.4 }}
-              className="w-full p-8 bg-purple-300/60 rounded-4xl flex flex-col items-center justify-center space-y-2"
+              className="w-full p-8 bg-theme-purple rounded-4xl flex flex-col items-center justify-center space-y-2"
             >
-              <h1 className="text-5xl font-bold text-black">Congratulation</h1>
+              <h1 className="text-4xl font-bold flex justify-center flex-wrap">
+                {"Congratulations!".split("").map((letter, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                      delay: 0.3 + i * 0.05,
+                      type: "spring",
+                      stiffness: 300,
+                    }}
+                    style={{
+                      color: [
+                        "#FF0000",
+                        "#FF6600",
+                        "#FFCC00",
+                        "#00CC00",
+                        "#0099FF",
+                        "#6600FF",
+                        "#FF0099",
+                        "#FF0000",
+                        "#FF6600",
+                        "#FFCC00",
+                        "#00CC00",
+                        "#0099FF",
+                        "#6600FF",
+                        "#FF0099",
+                        "#FF0000",
+                      ][i % 15],
+                    }}
+                    className="inline-block drop-shadow-md"
+                  >
+                    {letter === " " ? "\u00A0" : letter}
+                  </motion.span>
+                ))}
+              </h1>
               <p className="text-xl text-black font-bold">
                 <span className="text-2xl text-red-500 font-bold mr-1">
                   {formatTime(totalTimer)}
                 </span>
                 秒でクリアしました！
               </p>
-              <p className="text-4xl font-bold text-green-500">
-                {totalScore}
-                <span className="text-2xl text-black"> Points</span>
-              </p>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-4xl font-bold text-green-500">
+                  {totalScore}
+                  <span className="text-2xl text-black"> Points</span>
+                </p>
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 15,
+                    delay: 0.5,
+                  }}
+                >
+                  <Image
+                    src={getResultSticker(totalScore)}
+                    alt="Result sticker"
+                    width={70}
+                    height={70}
+                    className="drop-shadow-lg"
+                  />
+                </motion.div>
+              </div>
 
               <div className="w-full mt-1">
                 <div className="bg-purple-200/60 rounded-xl p-6">
