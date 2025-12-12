@@ -228,13 +228,6 @@ export default function Page() {
     setQuizResults([]);
   };
 
-  const restartQuiz = () => {
-    // Reshuffle questions
-    const shuffled = [...QData].sort(() => Math.random() - 0.5);
-    setQData(shuffled);
-    startQuiz();
-  };
-
   const fadeVariants = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -359,7 +352,7 @@ export default function Page() {
                 const isTimeout = isAnswered && !selectedAnswer; // Timeout case
 
                 let buttonClass =
-                  "p-6 border-4 bg-theme-yellow rounded-lg font-semibold transition-all";
+                  "p-6 border-4 bg-theme-yellow rounded-lg font-semibold active:scale-95 transition-all";
 
                 if (!showResult) {
                   buttonClass += "";

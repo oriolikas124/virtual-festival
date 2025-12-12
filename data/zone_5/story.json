@@ -13,6 +13,7 @@
     "intro": {
       "type": "video",
       "video": "videos/1.mp4",
+      "status": "奈良の朝,静かなはずの公園に、あなたの前へモフモフの小鹿たちが登場！",
       "duration": 8000,
       "choices": [
         {
@@ -28,22 +29,39 @@
     "v1_up": {
       "type": "video",
       "video": "videos/2.mp4",
+      "status": "そっと手を差し出すと、小鹿がふわりと近づき、あなたへの信頼度が上がった。",
       "duration": 8000,
-      "autoNext": true,
-      "status": "鹿の信頼度が上がった。",
-      "next": "v2_up"
+      "choices": [
+        {
+          "text": "やさしくゆっくり近づいて、せんべいを買いに行く。",
+          "next": "v2_up"
+        },
+        {
+          "text": "とりあえずせんべいを買いに行く。",
+          "next": "v2_down_up"
+        }
+      ]
     },
     "v1_down": {
       "type": "video",
       "video": "videos/3.mp4",
+      "status": "小鹿は不安そうにして、警戒し始めた。",
       "duration": 8000,
-      "autoNext": true,
-      "status": "鹿が警戒した。",
-      "next": "v2_down"
+      "choices": [
+        {
+          "text": "やさしくゆっくり近づいて、せんべいを買いに行く。",
+          "next": "v2_up_down"
+        },
+        {
+          "text": "まあ… とりあえずせんべいを買いに行く。",
+          "next": "v2_down"
+        }
+      ]
     },
     "v2_up": {
       "type": "video",
       "video": "videos/4.mp4",
+      "status": "せんべいを買った瞬間、小鹿がぱっと顔を上げ、嬉しそうにこちらへ駆け寄ってくる。",
       "duration": 8000,
       "choices": [
         {
@@ -51,7 +69,23 @@
           "next": "v3_up_1"
         },
         {
-          "text": "しかせんべいをわざと高く上げて、しかをからかう。",
+          "text": "せんべいをわざと高く上げて、しかをからかう。",
+          "next": "v3_down_1"
+        }
+      ]
+    },
+    "v2_up_down": {
+      "type": "video",
+      "video": "videos/4.mp4",
+      "status": "せんべいを買った瞬間、小鹿がぱっと顔を上げ、嬉しそうにこちらへ駆け寄ってくる。",
+      "duration": 8000,
+      "choices": [
+        {
+          "text": "一枚ずつゆっくりあげる",
+          "next": "v3_up_1"
+        },
+        {
+          "text": "せんべいをわざと高く上げて、しかをからかう。",
           "next": "v3_down_1"
         }
       ]
@@ -59,6 +93,7 @@
     "v2_down": {
       "type": "video",
       "video": "videos/5.mp4",
+      "status": "ちょっと警戒していた小鹿も、あなたがせんべいを持った瞬間、一気に近寄ってきた。",
       "duration": 8000,
       "choices": [
         {
@@ -66,7 +101,23 @@
           "next": "v3_up_2"
         },
         {
-          "text": "しかせんべいをわざと高く上げて、しかをからかう。",
+          "text": "せんべいをわざと高く上げて、しかをからかう。",
+          "next": "v3_down_2"
+        }
+      ]
+    },
+    "v2_down_up": {
+      "type": "video",
+      "video": "videos/5.mp4",
+      "status": "あなたがせんべいを持った瞬間、一気に近寄ってきた。",
+      "duration": 8000,
+      "choices": [
+        {
+          "text": "一枚ずつゆっくりあげる",
+          "next": "v3_up_2"
+        },
+        {
+          "text": "せんべいをわざと高く上げて、しかをからかう。",
           "next": "v3_down_2"
         }
       ]
@@ -74,62 +125,68 @@
     "v3_up_1": {
       "type": "video",
       "video": "videos/6.mp4",
-      "duration": 8000,
-      "autoNext": true,
-      "next": "v4_up_1"
+      "duration": 6000,
+      "choices": [
+        {
+          "text": "小鹿と一緒に遊び続ける？",
+          "next": "v5_up_1"
+        }
+      ]
     },
     "v3_down_1": {
       "type": "video",
       "video": "videos/7.mp4",
-      "duration": 8000,
-      "autoNext": true,
+      "status": "調子に乗って高く上げたせんべい、次の瞬間…小鹿にすばやく奪われた。",
+      "duration": 6000,
       "next": "v4_down_1"
     },
     "v3_up_2": {
       "type": "video",
       "video": "videos/6.mp4",
-      "duration": 8000,
-      "autoNext": true,
-      "next": "v4_up_2"
+      "duration": 6000,
+      "choices": [
+        {
+          "text": "小鹿と一緒に遊び続ける？",
+          "next": "v5_up_2"
+        }
+      ]
     },
     "v3_down_2": {
       "type": "video",
       "video": "videos/7.mp4",
-      "duration": 8000,
       "autoNext": true,
+      "status": "調子に乗って高く上げたせんべい、次の瞬間…小鹿にすばやく奪われた。",
+      "duration": 6000,
       "next": "v4_down_2"
-    },
-    "v4_up_1": {
-      "type": "video",
-      "video": "videos/8.mp4",
-      "duration": 8000,
-      "autoNext": true,
-      "next": "v5_up_1"
     },
     "v4_down_1": {
       "type": "video",
       "video": "videos/9.mp4",
-      "duration": 8000,
-      "autoNext": true,
-      "next": "v5_down_1"
-    },
-    "v4_up_2": {
-      "type": "video",
-      "video": "videos/8.mp4",
-      "duration": 8000,
-      "autoNext": true,
-      "next": "v5_up_2"
+      "status": "調子に乗って高く上げたせんべい、次の瞬間…小鹿にすばやく奪われた。",
+      "duration": 6000,
+      "choices": [
+        {
+          "text": "あれ…？小鹿が怒ってる？",
+          "next": "v5_down_1"
+        }
+      ]
     },
     "v4_down_2": {
       "type": "video",
       "video": "videos/9.mp4",
-      "duration": 8000,
-      "autoNext": true,
-      "next": "v5_down_2"
+      "status": "調子に乗って高く上げたせんべい、次の瞬間…小鹿にすばやく奪われた。",
+      "duration": 6000,
+      "choices": [
+        {
+          "text": "あれ…？小鹿が怒ってる？",
+          "next": "v5_down_2"
+        }
+      ]
     },
     "v5_up_1": {
       "type": "video",
       "video": "videos/10.mp4",
+      "status": "鹿があなたを湖のほとりへ案内する。",
       "duration": 8000,
       "choices": [
         {
@@ -137,7 +194,7 @@
           "next": "v6_up_photo"
         },
         {
-          "text": "しかせんべいを静かに景色を眺める",
+          "text": "静かに景色を眺める",
           "next": "v6_up_view"
         }
       ]
@@ -145,6 +202,7 @@
     "v5_up_2": {
       "type": "video",
       "video": "videos/10.mp4",
+      "status": "鹿があなたを湖のほとりへ案内する。",
       "duration": 8000,
       "choices": [
         {
@@ -152,7 +210,7 @@
           "next": "v6_up_photo_normal"
         },
         {
-          "text": "しかせんべいを静かに景色を眺める",
+          "text": "静かに景色を眺める",
           "next": "v6_up_view_normal"
         }
       ]
@@ -160,6 +218,7 @@
     "v5_down_1": {
       "type": "video",
       "video": "videos/11.mp4",
+      "status": "鹿が仲間を呼び、あなたを“取り囲む！”",
       "duration": 8000,
       "choices": [
         {
@@ -168,13 +227,14 @@
         },
         {
           "text": "逃げる",
-          "next": "v6_down_run"
+          "next": "v6_down_run_1"
         }
       ]
     },
     "v5_down_2": {
       "type": "video",
       "video": "videos/11.mp4",
+      "status": "鹿が仲間を呼び、あなたを“取り囲む！”",
       "duration": 8000,
       "choices": [
         {
@@ -183,84 +243,102 @@
         },
         {
           "text": "逃げる",
-          "next": "v6_down_run"
+          "next": "v6_down_run_2"
         }
       ]
     },
     "v6_up_photo": {
       "type": "video",
       "video": "videos/10-1.mp4",
+      "status": "小鹿のかわいい瞬間をカメラにおさめる。",
       "duration": 8000,
-      "autoNext": true,
-      "next": "v7_happy"
+      "choices": [
+        {
+          "text": "小鹿が何か伝えたそう。近づいてみる。",
+          "next": "v7_happy"
+        }
+      ]
     },
     "v6_up_view": {
       "type": "video",
       "video": "videos/10-2.mp4",
+      "status": "同じ景色を見ているだけで、心がふわりと軽くなる。",
       "duration": 8000,
-      "autoNext": true,
-      "next": "v7_happy"
+      "choices": [
+        {
+          "text": "小鹿が何か伝えたそう。近づいてみる。",
+          "next": "v7_happy"
+        }
+      ]
     },
     "v6_up_photo_normal": {
       "type": "video",
       "video": "videos/10-1.mp4",
+      "status": "小鹿のかわいい瞬間をカメラにおさめる。",
       "duration": 8000,
-      "autoNext": true,
-      "next": "v7_normal"
+      "choices": [
+        {
+          "text": "小鹿が何か伝えたそう。近づいてみる。",
+          "next": "v7_normal"
+        }
+      ]
     },
     "v6_up_view_normal": {
       "type": "video",
       "video": "videos/10-2.mp4",
+      "status": "同じ景色を見ているだけで、心がふわりと軽くなる。",
       "duration": 8000,
-      "autoNext": true,
-      "next": "v7_normal"
+      "choices": [
+        {
+          "text": "心が癒された…もう一枚せんべいあげよう",
+          "next": "v7_normal"
+        }
+      ]
     },
     "v6_down_apology": {
       "type": "video",
       "video": "videos/15.mp4",
+      "status": "小鹿があなたを許し、群れは去っていく。小鹿は静かにお辞儀を返した。",
       "duration": 8000,
-      "autoNext": true,
-      "next": "v7_normal"
+      "choices": [
+        {
+          "text": "やさしくせんべいを渡す",
+          "next": "v7_normal"
+        }
+      ]
     },
-    "v6_down_run": {
+    "v6_down_run_2": {
       "type": "video",
       "video": "videos/16.mp4",
+      "status": "気づけば鹿まみれ！みんなで全力で追ってくる！",
       "duration": 8000,
-      "autoNext": true,
-      "next": "v7_bad_route"
+      "choices": [
+        {
+          "text": "バッドエンドへ進む",
+          "next": "v7_bad"
+        }
+      ]
     },
-    "v7_bad_route": {
+    "v6_down_run_1": {
       "type": "video",
       "video": "videos/17.mp4",
+      "status": "気づけば鹿まみれ！みんなで全力で追ってくる！",
       "duration": 8000,
       "choices": [
         {
           "text": "振り返って謝る",
-          "next": "v6_down_apology_normal"
+          "next": "v6_down_apology"
         },
         {
           "text": "全力で逃げる",
-          "next": "v6_down_run_bad"
+          "next": "v7_bad"
         }
       ]
-    },
-    "v6_down_apology_normal": {
-      "type": "video",
-      "video": "videos/15.mp4",
-      "duration": 8000,
-      "autoNext": true,
-      "next": "v7_normal"
-    },
-    "v6_down_run_bad": {
-      "type": "video",
-      "video": "videos/16.mp4",
-      "duration": 8000,
-      "autoNext": true,
-      "next": "v7_bad"
     },
     "v7_happy": {
       "type": "video",
       "video": "videos/12.mp4",
+      "status": "小鹿はもう一度、深く頭を下げた。ありがとうの気持ちをこめて。",
       "duration": 8000,
       "end": true,
       "endingType": "happy"
@@ -268,6 +346,7 @@
     "v7_normal": {
       "type": "video",
       "video": "videos/13.mp4",
+      "status": "小鹿はせんべいに大満足！ひと休み顔で、のんびりと去っていった。",
       "duration": 8000,
       "end": true,
       "endingType": "normal"
@@ -275,6 +354,7 @@
     "v7_bad": {
       "type": "video",
       "video": "videos/14.mp4",
+      "status": "小鹿たちが暴走モードに入った！急いで逃げろ！",
       "duration": 8000,
       "end": true,
       "endingType": "bad"

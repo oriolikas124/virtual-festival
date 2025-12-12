@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const imageList = [
   "/images/zone_4/zone_4_pz01.jpg",
-  "/images/zone_4/zone_4_pz04.jpg",
+  "/images/zone_4/zone_4_pz02.jpg",
   "/images/zone_4/zone_4_pz03.jpg",
 ];
 
@@ -404,7 +404,7 @@ export default function Zone4() {
               </div>
               <button
                 onClick={handleStart}
-                className="px-8 md:px-12 py-3 md:py-4 bg-theme-yellow rounded-full font-semibold text-base md:text-lg active:scale-95 transition-transform shadow-lg hover:shadow-xl"
+                className="px-8 md:px-12 py-3 md:py-4 bg-theme-yellow rounded-full font-semibold text-base md:text-lg active:scale-95 transition-transform"
               >
                 スタート
               </button>
@@ -438,7 +438,7 @@ export default function Zone4() {
               </div>
               <button
                 onClick={handleSkip}
-                className="px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl bg-red-500/80 text-white text-sm md:text-base font-semibold active:scale-[0.98]"
+                className="px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl bg-red-500/80 text-white text-sm md:text-base font-semibold active:scale-95 transition-transform"
               >
                 Skip
               </button>
@@ -527,7 +527,7 @@ export default function Zone4() {
 
               <Link
                 href="/controller/"
-                className="px-8 md:px-12 py-3 md:py-4 bg-theme-yellow text-black rounded-xl md:rounded-2xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-shadow active:scale-[0.98]"
+                className="px-8 md:px-12 py-3 md:py-4 bg-theme-yellow text-black rounded-xl md:rounded-2xl font-semibold text-base md:text-lg shadow-lg hover:shadow-xl active:scale-95 transition-transform"
               >
                 コントローラーに戻る
               </Link>

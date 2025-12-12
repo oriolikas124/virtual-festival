@@ -470,7 +470,7 @@ export default function Page() {
                 const isTimeout = isAnswered && !selectedAnswer;
 
                 let buttonClass =
-                  "p-6 border-4 bg-theme-yellow rounded-lg font-semibold transition-all";
+                  "p-6 border-4 bg-theme-yellow rounded-lg font-semibold active:scale-95 transition-all";
 
                 if (!showResult) {
                   buttonClass += "";
