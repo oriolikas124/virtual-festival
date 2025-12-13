@@ -278,6 +278,33 @@ function checkCollision(x, y) {
   return !isInWalkableArea(x, y);
 }
 
+// Advanced collision response - tries to slide along walls
+// When direct movement is blocked, try moving only in X or only in Y direction
+function moveWithCollisionResponse(player, moveX, moveY) {
+  const newX = player.x + moveX;
+  const newY = player.y + moveY;
+
+  // If the full movement is valid, apply it
+  if (!checkCollision(newX, newY)) {
+    return { x: newX, y: newY, moved: true };
+  }
+
+  // Full movement is blocked, try sliding along walls
+  // Try moving only in X direction
+  const newXOnly = player.x + moveX;
+  if (!checkCollision(newXOnly, player.y)) {
+    return { x: newXOnly, y: player.y, moved: true };
+  }
+
+  // Try moving only in Y direction
+  if (!checkCollision(player.x, player.y + moveY)) {
+    return { x: player.x, y: player.y + moveY, moved: true };
+  }
+
+  // If both fail, no movement possible
+  return { x: player.x, y: player.y, moved: false };
+}
+
 // Load map data on startup
 loadMapData();
 
@@ -405,28 +432,30 @@ io.on("connection", (socket) => {
     if (direction) {
       // Handle directional movement (from controller)
       const moveSpeed = 0.1;
-      let newX = player.x;
-      let newY = player.y;
+      let moveX = 0;
+      let moveY = 0;
 
       switch (direction) {
         case "up":
-          newY = player.y - moveSpeed;
+          moveY = -moveSpeed;
           break;
         case "down":
-          newY = player.y + moveSpeed;
+          moveY = moveSpeed;
           break;
         case "left":
-          newX = player.x - moveSpeed;
+          moveX = -moveSpeed;
           break;
         case "right":
-          newX = player.x + moveSpeed;
+          moveX = moveSpeed;
           break;
       }
 
-      // Check collision before updating position
-      if (!checkCollision(newX, newY)) {
-        player.x = newX;
-        player.y = newY;
+      // Use collision response for smooth wall sliding
+      const moveResult = moveWithCollisionResponse(player, moveX, moveY);
+
+      if (moveResult.moved) {
+        player.x = moveResult.x;
+        player.y = moveResult.y;
       }
     } else if (x !== undefined && y !== undefined) {
       // Handle absolute position (from venue map clicks)
@@ -451,22 +480,20 @@ io.on("connection", (socket) => {
 
     if (speed > 0) {
       // Calculate movement based on vector with slow constant speed
-      const moveSpeed = 1.2; // Low speed
+      const moveSpeed = 0.9; // Low speed
       const moveX = x * moveSpeed;
       const moveY = y * moveSpeed;
 
-      // Calculate new position - NO rectangular bounds, only walkable polygon check
-      const newX = player.x + moveX;
-      const newY = player.y + moveY;
+      // Use collision response to handle wall sliding
+      const moveResult = moveWithCollisionResponse(player, moveX, moveY);
 
-      // Check collision before updating position
-      if (!checkCollision(newX, newY)) {
+      if (moveResult.moved) {
         const oldZone = player.currentZone;
-        player.x = newX;
-        player.y = newY;
+        player.x = moveResult.x;
+        player.y = moveResult.y;
 
         // Check if player entered or left a zone
-        const newZone = getPlayerZone(newX, newY);
+        const newZone = getPlayerZone(moveResult.x, moveResult.y);
 
         if (newZone !== oldZone) {
           player.currentZone = newZone;
