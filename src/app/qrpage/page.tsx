@@ -13,8 +13,8 @@ const QR_CONFIG = {
 
 // S = WiFi Name, P = Password
 const WIFI_QR_TEXT = 'WIFI:T:WPA;S:VirtualFestival;P:virtualfestival123;;';
-const SERVER_QR_TEXT = 'https://192.168.11.2:3001';
-const FESTIVAL_QR_TEXT = 'https://192.168.11.2:3000/controller';
+const SERVER_QR_TEXT = 'https://192.168.11.3:3001';
+const FESTIVAL_QR_TEXT = 'https://192.168.11.3:3000/controller';
 
 const renderQrCode = async (element: HTMLDivElement, text: string) => {
     const QrCreator = await import('qr-creator');
