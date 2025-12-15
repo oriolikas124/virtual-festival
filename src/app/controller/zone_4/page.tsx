@@ -22,10 +22,10 @@ function formatTime(totalSeconds: number) {
 // Calculate score based on time taken for each puzzle
 // Fast completion = more points
 const calculatePuzzleScore = (seconds: number): number => {
-  if (seconds <= 40) return 70; // Very fast: 70 points
-  if (seconds <= 50) return 55; // Fast: 55 points
-  if (seconds <= 60) return 40; // Normal: 40 points
-  if (seconds <= 70) return 25; // Slow: 25 points
+  if (seconds <= 50) return 70; // Very fast: 70 points
+  if (seconds <= 60) return 55; // Fast: 55 points
+  if (seconds <= 70) return 40; // Normal: 40 points
+  if (seconds <= 80) return 25; // Slow: 25 points
   return 15; // Very slow: 15 points
 };
 
@@ -476,15 +476,19 @@ export default function Zone4() {
                     <div className="text-4xl md:text-6xl font-bold text-green-400 drop-shadow-lg">
                       +{lastPuzzleScore}
                     </div>
-                    <div className="text-lg md:text-xl text-white mt-2">
-                      {puzzleSecondsRef.current <= 20
-                        ? "⚡ 超速い！"
-                        : puzzleSecondsRef.current <= 35
-                        ? "🔥 速い！"
-                        : puzzleSecondsRef.current <= 50
-                        ? "👍 いいね！"
-                        : "✓ クリア！"}
-                    </div>
+                    <img
+                      src={
+                        puzzleSecondsRef.current <= 50
+                          ? "/Emoji/超速.png"
+                          : puzzleSecondsRef.current <= 60
+                            ? "/Emoji/速い.png"
+                            : puzzleSecondsRef.current <= 70
+                              ? "/Emoji/いいね.png"
+                              : "/Emoji/クリア.png"
+                      }
+                      alt="emoji"
+                      className="w-32 h-32 mx-auto mt-2 object-contain drop-shadow-lg"
+                    />
                   </div>
                 </div>
               )}
@@ -565,9 +569,8 @@ export default function Zone4() {
                     "#73d13d",
                     "#faad14",
                   ][i % 5],
-                  animation: `confetti ${
-                    2.8 + Math.random()
-                  }s ease-in forwards`,
+                  animation: `confetti ${2.8 + Math.random()
+                    }s ease-in forwards`,
                   animationDelay: `${Math.random() * 0.6}s`,
                   borderRadius: "2px",
                 }}
