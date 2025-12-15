@@ -559,14 +559,14 @@ export default function Page() {
                   >
                     画像をダウンロード
                   </a>
-                  <Link
-                    href="/controller/"
-                    className="px-8 py-3 bg-theme-yellow text-black rounded-full font-semibold active:scale-95 transition-transform"
-                  >
-                    コントローラーに戻る
-                  </Link>
                 </div>
               )}
+              <Link
+                href="/controller/"
+                className="px-8 py-3 bg-theme-yellow text-black rounded-full font-semibold active:scale-95 transition-transform"
+              >
+                コントローラーに戻る
+              </Link>
             </div>
           </motion.div>
         );

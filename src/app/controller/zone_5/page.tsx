@@ -49,6 +49,13 @@ export default function Page() {
     setIsLoading(false);
   }, []);
 
+  // Set videoPlaying to true when currentNodeId changes during gameplay
+  useEffect(() => {
+    if (state === "playing" && currentNodeId) {
+      setVideoPlaying(true);
+    }
+  }, [currentNodeId, state]);
+
   const getCurrentNode = (): StoryNode | null => {
     if (!storyData) return null;
     return storyData.nodes[currentNodeId] || null;
@@ -75,7 +82,7 @@ export default function Page() {
     // Save current node to history
     setNodeHistory((prev) => [...prev, currentNodeId]);
     setCurrentNodeId(nextNodeId);
-    setVideoPlaying(true);
+    // videoPlaying will be set to true by useEffect
     // Reset video key to trigger fade animation
     setVideoKey((prev) => prev + 1);
   };

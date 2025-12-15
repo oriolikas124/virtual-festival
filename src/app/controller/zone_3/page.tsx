@@ -617,7 +617,7 @@ export default function Page() {
                     </div>
                     <div className="text-center font-bold text-black">正解</div>
                   </div>
-                  d<div className="border-b-2 border-black mb-4"></div>
+                  <div className="border-b-2 border-black mb-4"></div>
                   <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
                     <div className="space-y-2">
                       {quizResults.map((result, index) => (
