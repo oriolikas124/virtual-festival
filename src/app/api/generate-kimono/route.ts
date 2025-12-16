@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
       'Art': 'Person in elegant traditional Japanese kimono, intricate patterns. Ukiyo-e woodblock style on clothing and background, face unchanged. Serene cherry blossom scene.',
 
-      'Fantasy': 'Person in magical fantasy Japanese kimono, ethereal glowing patterns. Fantasy art style on outfit and surroundings, preserve face. Mystical festival with floating lanterns.',
+      'Cyber': 'Person in magical cyberpunk Japanese kimono, ethereal glowing patterns. Cyberpunk art style on outfit and surroundings, preserve face. Futuristic festival with neon lights.',
 
       'Ghibli': 'Person in beautiful Japanese festival kimono. Studio Ghibli watercolor style on clothing and background, preserve face. Nostalgic festival with paper lanterns.'
     };

@@ -39,7 +39,7 @@ export default function Page() {
   const [QData, setQData] = useState<Question[]>([]);
   const [currentState, setCurrentState] = useState<StateType>("start");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [miniTimer, setMiniTimer] = useState(15);
+  const [miniTimer, setMiniTimer] = useState(20);
   const [totalTimer, setTotalTimer] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -141,7 +141,7 @@ export default function Page() {
         setMiniTimer((prev) => {
           if (prev <= 1) {
             handleTimeout();
-            return 15;
+            return 20;
           }
           return prev - 1;
         });
@@ -220,7 +220,7 @@ export default function Page() {
   const startQuiz = () => {
     setCurrentState("quiz");
     setCurrentQuestionIndex(0);
-    setMiniTimer(15);
+    setMiniTimer(20);
     setTotalTimer(0);
     setTotalScore(0);
     setSelectedAnswer(null);

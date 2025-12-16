@@ -49,7 +49,7 @@ export default function QRPage() {
         <div className="min-h-screen flex flex-col bg-[url('/background/background.jpg')] bg-cover bg-center">
             <div className="absolute inset-0 backdrop-blur-md"></div>
             <main className="container flex flex-col justify-center mx-auto px-4 py-8 flex-1 z-10">
-                <div className="flex justify-center gap-48">
+                <div className="flex justify-center gap-24">
                     <div>
                         <Link href="/">
                             <h1 className="text-6xl text-white text-center font-bold mb-8">Step 1.</h1>

@@ -39,7 +39,7 @@ export default function Page() {
   const [QData, setQData] = useState<Question[]>([]);
   const [currentState, setCurrentState] = useState<StateType>("start");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [miniTimer, setMiniTimer] = useState(20);
+  const [miniTimer, setMiniTimer] = useState(30);
   const [totalTimer, setTotalTimer] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);

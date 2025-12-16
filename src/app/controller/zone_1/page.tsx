@@ -187,7 +187,6 @@ export default function Page() {
 
   const retakeImage = () => {
     setCapturedImage(null);
-
     // Ensure video is playing
     if (videoRef.current && stream && stream.active) {
       videoRef.current.srcObject = stream;
@@ -427,12 +426,12 @@ export default function Page() {
             <div className="flex gap-4 w-full">
               {capturedImage ? (
                 <>
-                  <button
+                  {/* <button
                     onClick={retakeImage}
                     className="flex-1 py-3 px-6 bg-gray-200 text-gray-800 rounded-xl font-medium active:scale-95 transition-transform"
                   >
                     撮り直す
-                  </button>
+                  </button> */}
                   <button
                     onClick={confirmImage}
                     className="flex-1 py-3 px-6 bg-theme-yellow rounded-xl font-medium active:scale-95 transition-transform"
@@ -476,22 +475,22 @@ export default function Page() {
             {isGenerating ? (
               <div className="flex flex-col items-center space-y-4 py-12">
                 <div className="w-16 h-16 border-4 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-lg text-gray-700">画像を生成中...</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-lg text-gray-300">画像を生成中...</p>
+                <p className="text-sm text-gray-400">
                   30-60秒かかる場合があります
                 </p>
               </div>
             ) : (
               <>
                 <div className="grid grid-cols-2 gap-4 max-w-lg">
-                  {["Anime", "Art", "Fantasy", "Ghibli"].map((style, index) => (
+                  {["Anime", "Art", "Cyber", "Ghibli"].map((style, index) => (
                     <motion.button
                       key={style}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.1, duration: 0.3 }}
                       onClick={() => generateKimono(style)}
-                      className="p-6 border-2 bg-theme-yellow border-gray-300 rounded-lg"
+                      className="p-6 border-2 bg-theme-yellow border-gray-300 rounded-lg active:scale-95 transition-transform"
                     >
                       <span className="text-xl font-semibold">{style}</span>
                     </motion.button>
@@ -499,7 +498,7 @@ export default function Page() {
                 </div>
                 <button
                   onClick={() => setCurrentState("preview")}
-                  className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-400 active:scale-95 transition-transform"
+                  className="px-8 py-2 bg-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-400 active:scale-95 transition-transform"
                 >
                   戻る
                 </button>
@@ -583,7 +582,7 @@ export default function Page() {
         <BackBtn />
       </div>
       {/* Main content */}
-      <main className="flex flex-col items-center justify-center px-8 w-full flex-1 text-center">
+      <main className="flex flex-col max-w-4xl items-center justify-center px-8 w-full flex-1 text-center">
         <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
       </main>
 

@@ -69,21 +69,21 @@ export default function DashboardPage() {
 
         setGameRankings([
           {
-            title: "東京電車アナウンス",
+            title: "山手線クイズ",
             players: (data.zone_2 || []).map((p: RankingEntry) => ({
               name: p.name,
               points: p.score,
             })),
           },
           {
-            title: "富士山パズル",
+            title: "アナウンスクイズ",
             players: (data.zone_3 || []).map((p: RankingEntry) => ({
               name: p.name,
               points: p.score,
             })),
           },
           {
-            title: "鹿せんべいチャレンジ",
+            title: "富士山パズル",
             players: (data.zone_4 || []).map((p: RankingEntry) => ({
               name: p.name,
               points: p.score,
