@@ -661,7 +661,7 @@ export default function NattoGamePage() {
   useEffect(() => {
     if (gameState !== "result") {
       setScore(0);
-      setTimeLeft(30);
+      setTimeLeft(20);
       setMixingQuality(0);
       setHasMixingStarted(false);
       timerStarted.current = false;
