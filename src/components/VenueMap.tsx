@@ -14,10 +14,12 @@ interface Player {
 
 interface PlayerSprite {
     container: Phaser.GameObjects.Container;
-    sprite: Phaser.GameObjects.Image;
+    sprite: Phaser.GameObjects.Sprite;
     nameText: Phaser.GameObjects.Text;
     targetX: number;
     targetY: number;
+    lastDirection: number; // 0-7 for 8 directions
+    isMoving: boolean;
 }
 
 export const VenueMap = () => {
@@ -32,12 +34,12 @@ export const VenueMap = () => {
         // Create container for character and name
         const container = scene.add.container(player.x, player.y);
 
-        // Create character sprite
-        const sprite = scene.add.image(0, 0, 'character');
-        sprite.setDisplaySize(48, 48);
+        // Create character sprite with spritesheet animation
+        const sprite = scene.add.sprite(0, 0, 'character');
+        sprite.setDisplaySize(48, 60); // Scale up from 38x50
 
         // Create nickname text above character
-        const nameText = scene.add.text(0, -35, player.name, {
+        const nameText = scene.add.text(0, -40, player.name, {
             fontSize: '14px',
             fontFamily: 'Arial, sans-serif',
             color: '#ffffff',
@@ -51,13 +53,18 @@ export const VenueMap = () => {
         container.add([sprite, nameText]);
         container.setDepth(100); // Ensure players are above map tiles
 
+        // Play idle animation (default direction: down = 4)
+        sprite.play('char_idle_4');
+
         // Store player sprite reference
         const playerSprite: PlayerSprite = {
             container,
             sprite,
             nameText,
             targetX: player.x,
-            targetY: player.y
+            targetY: player.y,
+            lastDirection: 4, // Default facing down
+            isMoving: false
         };
 
         playersRef.current.set(socketId, playerSprite);
@@ -169,12 +176,42 @@ export const VenueMap = () => {
                     // Load tilemap
                     this.load.tilemapTiledJSON('map', '/map/map.tmj');
 
-                    // Load character sprite
-                    this.load.svg('character', '/character.svg', { width: 48, height: 48 });
+                    // Load character spritesheet (38x50 per frame, 8 columns x 3 rows)
+                    this.load.spritesheet('character', '/character_spritesheet.png', {
+                        frameWidth: 38,
+                        frameHeight: 50
+                    });
                 }
 
                 create() {
                     sceneRef.current = this;
+
+                    // Create character animations for 8 directions
+                    // Direction mapping (clockwise from up):
+                    // 0: up, 1: up-right, 2: right, 3: down-right
+                    // 4: down, 5: down-left, 6: left, 7: up-left
+                    // Spritesheet layout: 8 columns (directions) x 3 rows (frames)
+                    for (let dir = 0; dir < 8; dir++) {
+                        // Walk animation (3 frames)
+                        this.anims.create({
+                            key: `char_walk_${dir}`,
+                            frames: [
+                                { key: 'character', frame: dir },      // Row 0
+                                { key: 'character', frame: dir + 8 },  // Row 1
+                                { key: 'character', frame: dir + 16 }  // Row 2
+                            ],
+                            frameRate: 8,
+                            repeat: -1
+                        });
+
+                        // Idle animation (single frame from row 0)
+                        this.anims.create({
+                            key: `char_idle_${dir}`,
+                            frames: [{ key: 'character', frame: dir }],
+                            frameRate: 1,
+                            repeat: 0
+                        });
+                    }
 
                     const map = this.make.tilemap({ key: 'map' });
 
@@ -315,6 +352,49 @@ export const VenueMap = () => {
                         const container = playerSprite.container;
                         const targetX = playerSprite.targetX;
                         const targetY = playerSprite.targetY;
+
+                        // Calculate distance to target
+                        const dx = targetX - container.x;
+                        const dy = targetY - container.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        // Determine if player is moving
+                        const isMoving = distance > 1;
+
+                        if (isMoving) {
+                            // Calculate direction (0-7) from movement angle
+                            // Angle: 0 = right, going counter-clockwise
+                            const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                            
+                            // Convert angle to 8 directions (clockwise from up)
+                            // up=0, up-right=1, right=2, down-right=3, down=4, down-left=5, left=6, up-left=7
+                            let direction: number;
+                            if (angle >= -112.5 && angle < -67.5) direction = 0;      // up
+                            else if (angle >= -67.5 && angle < -22.5) direction = 1;  // up-right
+                            else if (angle >= -22.5 && angle < 22.5) direction = 2;   // right
+                            else if (angle >= 22.5 && angle < 67.5) direction = 3;    // down-right
+                            else if (angle >= 67.5 && angle < 112.5) direction = 4;   // down
+                            else if (angle >= 112.5 && angle < 157.5) direction = 5;  // down-left
+                            else if (angle >= 157.5 || angle < -157.5) direction = 6; // left
+                            else direction = 7; // up-left
+
+                            playerSprite.lastDirection = direction;
+
+                            // Play walk animation if not already playing
+                            if (!playerSprite.isMoving) {
+                                playerSprite.sprite.play(`char_walk_${direction}`);
+                                playerSprite.isMoving = true;
+                            } else if (playerSprite.sprite.anims.currentAnim?.key !== `char_walk_${direction}`) {
+                                // Direction changed, switch animation
+                                playerSprite.sprite.play(`char_walk_${direction}`);
+                            }
+                        } else {
+                            // Player stopped moving - play idle animation
+                            if (playerSprite.isMoving) {
+                                playerSprite.sprite.play(`char_idle_${playerSprite.lastDirection}`);
+                                playerSprite.isMoving = false;
+                            }
+                        }
 
                         // Lerp towards target position
                         const lerpFactor = 0.15;
