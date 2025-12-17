@@ -216,9 +216,7 @@ export default function DashboardPage() {
               <InfiniteGallery
                 images={galleryImages}
                 direction="left"
-                speed={70}
-                stagger={true}
-                staggerAmount={64}
+                speed={50}
                 className="w-full h-full"
               />
             ) : (
@@ -239,9 +237,7 @@ export default function DashboardPage() {
               borderTopRightRadius: "14px",
             }}
           >
-            <Link href="/">
-              Total Ranking
-            </Link>
+            <Link href="/">Total Ranking</Link>
           </div>
           <div className="relative flex-1">
             <table className="w-full border-collapse">
