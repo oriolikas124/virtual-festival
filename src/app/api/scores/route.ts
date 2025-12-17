@@ -73,11 +73,11 @@ export async function GET() {
       .slice(0, 5);
 
     return NextResponse.json({
-      zone_1: scores.zone_1.slice(0, 5),
-      zone_2: scores.zone_2.slice(0, 5),
-      zone_3: scores.zone_3.slice(0, 5),
-      zone_4: scores.zone_4.slice(0, 5),
-      zone_6: scores.zone_6.slice(0, 5),
+      zone_1: scores.zone_1.slice(0, 8),
+      zone_2: scores.zone_2.slice(0, 8),
+      zone_3: scores.zone_3.slice(0, 8),
+      zone_4: scores.zone_4.slice(0, 8),
+      zone_6: scores.zone_6.slice(0, 8),
       total,
     });
   } catch (error) {

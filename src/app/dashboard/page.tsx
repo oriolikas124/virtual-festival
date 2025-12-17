@@ -162,15 +162,15 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="min-h-[200px]">
-                  {game.players.slice(0, 3).map((p, i) => (
+                  {game.players.slice(0, 8).map((p, i) => (
                     <tr key={i}>
-                      <td className="px-3 pt-2 pb-2 text-center text-white text-xl font-semibold">
+                      <td className="px-3 pt-1 pb-1 text-center text-white text-xl font-semibold">
                         {i + 1}
                       </td>
-                      <td className="px-3 pt-2 pb-2 text-center text-white text-xl font-semibold">
+                      <td className="px-3 pt-1 pb-1 text-center text-white text-xl font-semibold">
                         {p.name}
                       </td>
-                      <td className="px-3 pt-2 pb-2 text-center text-white text-xl font-semibold">
+                      <td className="px-3 pt-1 pb-1 text-center text-white text-xl font-semibold">
                         {p.points}
                       </td>
                     </tr>

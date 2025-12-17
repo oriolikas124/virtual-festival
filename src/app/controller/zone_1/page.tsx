@@ -5,7 +5,7 @@ import BackBtn from "@/components/ui/BackBtn";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "lucide-react";
+import Link  from "next/link";
 
 type StateType = "guide" | "preview" | "choose-style" | "result";
 
@@ -538,35 +538,33 @@ export default function Page() {
                 </div>
               )}
             </motion.div>
-            <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-              <button
+            {/* <button
                 onClick={() => {
                   setCurrentState("guide");
                   setGeneratedImage(null);
                   setCapturedImage(null);
                 }}
-                className="px-6 py-3 bg-theme-yellow text-white rounded-lg font-semibold active:scale-95 transition-transform"
+                className="px-6 py-3 bg-theme-yellow text-black rounded-lg font-semibold active:scale-95 transition-transform"
               >
                 最初からやり直す
-              </button>
-              {generatedImage && (
-                <div className="flex flex-col">
-                  <a
-                    href={generatedImage}
-                    download="kimono-result.jpg"
-                    className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 font-semibold text-center active:scale-95 transition-transform"
-                  >
-                    画像をダウンロード
-                  </a>
-                </div>
-              )}
-              <Link
-                href="/controller/"
-                className="px-8 py-3 bg-theme-yellow text-black rounded-full font-semibold active:scale-95 transition-transform"
-              >
-                コントローラーに戻る
-              </Link>
-            </div>
+              </button> */}
+            {generatedImage && (
+              <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+                <a
+                  href={generatedImage}
+                  download="kimono-result.jpg"
+                  className="p-3 bg-green-500 text-black rounded-lg font-semibold text-center active:scale-95 transition-transform"
+                >
+                  画像をダウンロード
+                </a>
+                <Link
+                  href="/controller/"
+                  className="p-3 bg-theme-yellow text-black rounded-lg font-semibold text-center active:scale-95 transition-transform"
+                >
+                  コントローラーに戻る
+                </Link>
+              </div>
+            )}
           </motion.div>
         );
 
