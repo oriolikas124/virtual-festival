@@ -36,7 +36,7 @@ export const VenueMap = () => {
 
         // Create character sprite with spritesheet animation
         const sprite = scene.add.sprite(0, 0, 'character');
-        sprite.setDisplaySize(48, 60); // Scale up from 38x50
+        sprite.setDisplaySize(45, 50);
 
         // Create nickname text above character
         const nameText = scene.add.text(0, -40, player.name, {
@@ -178,7 +178,7 @@ export const VenueMap = () => {
 
                     // Load character spritesheet (38x50 per frame, 8 columns x 3 rows)
                     this.load.spritesheet('character', '/character_spritesheet.png', {
-                        frameWidth: 38,
+                        frameWidth: 45,
                         frameHeight: 50
                     });
                 }
