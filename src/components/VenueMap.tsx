@@ -177,7 +177,7 @@ export const VenueMap = () => {
                     this.load.tilemapTiledJSON('map', '/map/map.tmj');
 
                     // Load character spritesheet (38x50 per frame, 8 columns x 3 rows)
-                    this.load.spritesheet('character', '/character_spritesheet.png', {
+                    this.load.spritesheet('character', '/map/character_spritesheet.png', {
                         frameWidth: 45,
                         frameHeight: 50
                     });

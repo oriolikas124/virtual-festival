@@ -479,12 +479,12 @@ export default function Zone4() {
                     <img
                       src={
                         puzzleSecondsRef.current <= 50
-                          ? "/Emoji/超速.png"
+                          ? "/emojis/超速.png"
                           : puzzleSecondsRef.current <= 60
-                            ? "/Emoji/速い.png"
+                            ? "/emojis/速い.png"
                             : puzzleSecondsRef.current <= 70
-                              ? "/Emoji/いいね.png"
-                              : "/Emoji/クリア.png"
+                              ? "/emojis/いいね.png"
+                              : "/emojis/クリア.png"
                       }
                       alt="emoji"
                       className="w-32 h-32 mx-auto mt-2 object-contain drop-shadow-lg"

@@ -130,7 +130,7 @@ export default function Page() {
                   {storyData?.metadata.title}
                 </h1>
                 <Image
-                  src="/Emoji/頑張れ.png"
+                  src="/emojis/頑張れ.png"
                   alt="頑張れ"
                   width={70}
                   height={70}
@@ -280,13 +280,13 @@ export default function Page() {
         const getEndingSticker = (type: string): string => {
           switch (type) {
             case "happy":
-              return "/Emoji/やった.png";
+              return "/emojis/やった.png";
             case "normal":
-              return "/Emoji/いいね.png";
+              return "/emojis/いいね.png";
             case "bad":
-              return "/Emoji/残念.png";
+              return "/emojis/残念.png";
             default:
-              return "/Emoji/いいね.png";
+              return "/emojis/いいね.png";
           }
         };
 

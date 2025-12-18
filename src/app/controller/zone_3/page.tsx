@@ -10,10 +10,10 @@ import Link from "next/link";
 
 // Sticker selection based on score (max 200 points in this zone)
 const getResultSticker = (score: number): string => {
-  if (score >= 170) return "/Emoji/やった.png";
-  if (score >= 140) return "/Emoji/verygood.png";
-  if (score >= 80) return "/Emoji/いいね.png";
-  return "/Emoji/残念.png";
+  if (score >= 170) return "/emojis/やった.png";
+  if (score >= 140) return "/emojis/verygood.png";
+  if (score >= 80) return "/emojis/いいね.png";
+  return "/emojis/残念.png";
 };
 
 interface Question {
@@ -327,7 +327,7 @@ export default function Page() {
               <div className="relative flex items-center justify-center">
                 <h1 className="text-3xl font-bold">東京電車の音クイズ</h1>
                 <Image
-                  src="/Emoji/頑張れ.png"
+                  src="/emojis/頑張れ.png"
                   alt="頑張れ"
                   width={70}
                   height={70}

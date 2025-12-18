@@ -191,7 +191,7 @@ export default function DashboardPage() {
           style={{ borderColor: "#B3A0FF", backgroundColor: "#242833" }}
         >
           <Image
-            src="/fighting.png"
+            src="/emojis/頑張れ.png"
             width={300}
             height={300}
             alt="Fighting"

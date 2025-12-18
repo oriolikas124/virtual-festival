@@ -8,10 +8,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // Sticker selection based on score (1 point per rotation, ~45-90 points in 30s)
 const getResultSticker = (score: number): string => {
-  if (score >= 90) return "/Emoji/やった.png"; // 70+ rotations - excellent!
-  if (score >= 70) return "/Emoji/verygood.png"; // 50+ rotations - great!
-  if (score >= 50) return "/Emoji/いいね.png"; // 30+ rotations - good
-  return "/Emoji/残念.png"; // needs more practice
+  if (score >= 90) return "/emojis/やった.png"; // 70+ rotations - excellent!
+  if (score >= 70) return "/emojis/verygood.png"; // 50+ rotations - great!
+  if (score >= 50) return "/emojis/いいね.png"; // 30+ rotations - good
+  return "/emojis/残念.png"; // needs more practice
 };
 
 // Dynamically import Phaser only on client side
@@ -707,7 +707,7 @@ export default function NattoGamePage() {
                 <div className="relative flex items-center justify-center">
                   <h1 className="text-3xl font-bold">納豆を混ぜ</h1>
                   <Image
-                    src="/Emoji/頑張れ.png"
+                    src="/emojis/頑張れ.png"
                     alt="頑張れ"
                     width={70}
                     height={70}
