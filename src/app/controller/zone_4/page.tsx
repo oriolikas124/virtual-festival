@@ -6,11 +6,7 @@ import Header from "@/components/layout/Header";
 import BackBtn from "@/components/ui/BackBtn";
 import Link from "next/link";
 
-const imageList = [
-  "/images/zone_4/zone_4_pz01.jpg",
-  "/images/zone_4/zone_4_pz02.jpg",
-  "/images/zone_4/zone_4_pz03.jpg",
-];
+const puzzleImage = "/images/zone_4/fuji_img.jpg";
 
 function formatTime(totalSeconds: number) {
   const m = Math.floor(totalSeconds / 60);
@@ -19,29 +15,27 @@ function formatTime(totalSeconds: number) {
   return `${m}:${ss}`;
 }
 
-// Calculate score based on time taken for each puzzle
-// Fast completion = more points
+// Calculate score based on time taken
+// Fast completion = more points (adjusted for single puzzle)
 const calculatePuzzleScore = (seconds: number): number => {
-  if (seconds <= 50) return 70; // Very fast: 70 points
-  if (seconds <= 60) return 55; // Fast: 55 points
-  if (seconds <= 70) return 40; // Normal: 40 points
-  if (seconds <= 80) return 25; // Slow: 25 points
-  return 15; // Very slow: 15 points
+  if (seconds <= 30) return 120; // Super fast
+  if (seconds <= 40) return 100; // Very fast
+  if (seconds <= 55) return 80;  // Fast
+  if (seconds <= 70) return 60;  // Normal
+  if (seconds <= 90) return 45; // Slow
+  return 30; // Very slow
 };
 
 export default function Zone4() {
   const puzzleRef = useRef<HTMLDivElement>(null);
 
-  const [level, setLevel] = useState(0);
   const [score, setScore] = useState(0);
 
   const [isFinished, setIsFinished] = useState(false);
-  const [showNextPrompt, setShowNextPrompt] = useState(false);
   const [showStart, setShowStart] = useState(true);
 
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [puzzleSeconds, setPuzzleSeconds] = useState(0); // Timer for current puzzle
-  const [lastPuzzleScore, setLastPuzzleScore] = useState(0); // Score earned for last puzzle
   const [ticking, setTicking] = useState(false);
 
   const connectedRef = useRef<Set<string>>(new Set());
@@ -55,7 +49,7 @@ export default function Zone4() {
 
   useEffect(() => {
     connectedRef.current = new Set();
-  }, [level, showStart]);
+  }, [showStart]);
 
   const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
 
@@ -121,22 +115,22 @@ export default function Zone4() {
     return () => clearInterval(id);
   }, [ticking]);
 
-  // Puzzle timer - reset when level changes
+  // Puzzle timer
   useEffect(() => {
-    if (!ticking || showNextPrompt) return;
+    if (!ticking) return;
     const id = setInterval(() => setPuzzleSeconds((t) => t + 1), 1000);
     return () => clearInterval(id);
-  }, [ticking, level, showNextPrompt]);
+  }, [ticking]);
 
-  // Reset puzzle timer when starting a new puzzle
+  // Reset puzzle timer when starting
   useEffect(() => {
     setPuzzleSeconds(0);
-  }, [level]);
+  }, []);
 
   useEffect(() => {
     const container = puzzleRef.current;
 
-    if (!container || level >= imageList.length || showNextPrompt || showStart)
+    if (!container || showStart)
       return;
 
     container.innerHTML = "";
@@ -152,13 +146,13 @@ export default function Zone4() {
 
     type Meta = { pid: string; r: number; c: number };
     const metadata: Meta[] = Array.from({ length: horiz * vert }, (_, i) => ({
-      pid: `L${level}-P${i}`,
+      pid: `P${i}`,
       r: Math.floor(i / horiz),
       c: i % horiz,
     }));
 
     const img = new Image();
-    img.src = imageList[level];
+    img.src = puzzleImage;
     img.onload = () => {
       const canvas = new headbreaker.Canvas(container.id, {
         width,
@@ -298,68 +292,25 @@ export default function Zone4() {
       canvas.attachSolvedValidator();
       canvas.onValid(() => {
         const earnedScore = calculatePuzzleScore(puzzleSecondsRef.current);
-        setLastPuzzleScore(earnedScore);
 
-        if (level < imageList.length - 1) {
-          setScore((s) => {
-            const newScore = s + earnedScore;
-            scoreRef.current = newScore;
-            return newScore;
-          });
-          setShowNextPrompt(true);
-        } else {
-          setScore((s) => {
-            const newScore = s + earnedScore;
-            scoreRef.current = newScore;
-            return newScore;
-          });
-          setTicking(false);
-          setIsFinished(true);
-        }
+        // Since there's only 1 puzzle, finish immediately
+        setScore((s) => {
+          const newScore = s + earnedScore;
+          scoreRef.current = newScore;
+          return newScore;
+        });
+        setTicking(false);
+        setIsFinished(true);
       });
     };
-  }, [level, canvasSize, showNextPrompt, showStart]);
+  }, [canvasSize, showStart]);
 
   const handleStart = () => {
     setShowStart(false);
     setTicking(true);
   };
 
-  const handleNextLevel = () => {
-    setShowNextPrompt(false);
-    setLevel((prev) => prev + 1);
-  };
-
-  // Auto next level after 2 seconds when completed
-  useEffect(() => {
-    if (!showNextPrompt) return;
-
-    const timer = setTimeout(() => {
-      handleNextLevel();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [showNextPrompt]);
-
-  const handleSkip = () => {
-    const gained = connectedRef.current.size;
-    if (gained > 0)
-      setScore((s) => {
-        const newScore = s + gained;
-        scoreRef.current = newScore;
-        return newScore;
-      });
-
-    if (level < imageList.length - 1) {
-      setShowNextPrompt(false);
-      setLevel((prev) => prev + 1);
-    } else {
-      setTicking(false);
-      setIsFinished(true);
-    }
-  };
-
-  const startBg = imageList[level] ?? "";
+  const startBg = puzzleImage;
 
   return (
     <div className="flex flex-col min-h-screen bg-linear-to-b from-[#1a1f2e] to-[#0d1117]">
@@ -431,17 +382,7 @@ export default function Zone4() {
                     {score}
                   </span>
                 </div>
-                <div className="w-px h-4 md:h-5 bg-white/20" />
-                <span className="text-white/80 text-sm md:text-base">
-                  Lv.{Math.min(level + 1, imageList.length)}/{imageList.length}
-                </span>
               </div>
-              <button
-                onClick={handleSkip}
-                className="px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl bg-red-500/80 text-white text-sm md:text-base font-semibold active:scale-95 transition-transform"
-              >
-                Skip
-              </button>
             </div>
 
             {/* Preview image - always visible */}
@@ -450,7 +391,7 @@ export default function Zone4() {
                 className="w-full rounded-lg md:rounded-xl overflow-hidden"
                 style={{
                   aspectRatio: "4/3",
-                  backgroundImage: `url(${imageList[level]})`,
+                  backgroundImage: `url(${puzzleImage})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
@@ -468,31 +409,7 @@ export default function Zone4() {
                 backgroundColor: "rgba(100,100,120,0.3)",
                 border: "2px solid rgba(255,255,255,0.1)",
               }}
-            >
-              {/* Score popup when puzzle completed */}
-              {showNextPrompt && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-                  <div className="text-center animate-bounce">
-                    <div className="text-4xl md:text-6xl font-bold text-green-400 drop-shadow-lg">
-                      +{lastPuzzleScore}
-                    </div>
-                    <img
-                      src={
-                        puzzleSecondsRef.current <= 50
-                          ? "/emojis/超速.png"
-                          : puzzleSecondsRef.current <= 60
-                            ? "/emojis/速い.png"
-                            : puzzleSecondsRef.current <= 70
-                              ? "/emojis/いいね.png"
-                              : "/emojis/クリア.png"
-                      }
-                      alt="emoji"
-                      className="w-32 h-32 mx-auto mt-2 object-contain drop-shadow-lg"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+            />
           </div>
         )}
 
@@ -508,7 +425,7 @@ export default function Zone4() {
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `url(${imageList[imageList.length - 1]})`,
+                backgroundImage: `url(${puzzleImage})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 filter: "blur(6px) brightness(0.8)",

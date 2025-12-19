@@ -8,11 +8,11 @@ import quizData from "@/../data/zone_3/data.json";
 import Image from "next/image";
 import Link from "next/link";
 
-// Sticker selection based on score (max 200 points in this zone)
+// Sticker selection based on score 
 const getResultSticker = (score: number): string => {
-  if (score >= 170) return "/emojis/やった.png";
-  if (score >= 140) return "/emojis/verygood.png";
-  if (score >= 80) return "/emojis/いいね.png";
+  if (score >= 95) return "/emojis/やった.png";
+  if (score >= 70) return "/emojis/verygood.png";
+  if (score >= 50) return "/emojis/いいね.png";
   return "/emojis/残念.png";
 };
 
@@ -49,7 +49,7 @@ export default function Page() {
   const [hasStartedGame, setHasStartedGame] = useState(false);
   const [quizResults, setQuizResults] = useState<QuestionResult[]>([]);
 
-  const volume = 0.8;
+  const volume = 1;
 
   const miniTimerRef = useRef<NodeJS.Timeout | null>(null);
   const totalTimerRef = useRef<NodeJS.Timeout | null>(null);

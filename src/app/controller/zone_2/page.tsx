@@ -11,9 +11,9 @@ import Image from "next/image";
 
 // Sticker selection based on score (max 200 points in this zone)
 const getResultSticker = (score: number): string => {
-  if (score >= 120) return "/emojis/やった.png";
-  if (score >= 80) return "/emojis/verygood.png";
-  if (score >= 40) return "/emojis/いいね.png";
+  if (score >= 110) return "/emojis/やった.png";
+  if (score >= 75) return "/emojis/verygood.png";
+  if (score >= 50) return "/emojis/いいね.png";
   return "/emojis/残念.png";
 };
 

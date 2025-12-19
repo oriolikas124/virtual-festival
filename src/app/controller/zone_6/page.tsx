@@ -6,11 +6,11 @@ import BackBtn from "@/components/ui/BackBtn";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Sticker selection based on score (1 point per rotation, ~45-90 points in 30s)
+// Sticker selection based on score
 const getResultSticker = (score: number): string => {
-  if (score >= 90) return "/emojis/やった.png"; // 70+ rotations - excellent!
-  if (score >= 70) return "/emojis/verygood.png"; // 50+ rotations - great!
-  if (score >= 50) return "/emojis/いいね.png"; // 30+ rotations - good
+  if (score >= 140) return "/emojis/やった.png"; // 70+ rotations - excellent!
+  if (score >= 90) return "/emojis/verygood.png"; // 50+ rotations - great!
+  if (score >= 60) return "/emojis/いいね.png"; // 30+ rotations - good
   return "/emojis/残念.png"; // needs more practice
 };
 
@@ -583,7 +583,7 @@ export default function NattoGamePage() {
               this.graphics.beginPath();
               this.graphics.moveTo(bean1.position.x, bean1.position.y);
               this.graphics.lineTo(bean2.position.x, bean2.position.y);
-              this.graphics.strokePath();
+              this.graphics.strokePath(); 
             }
           }
 
@@ -596,7 +596,7 @@ export default function NattoGamePage() {
 
         const totalDegrees = Math.abs((this.totalRotation * 180) / Math.PI);
         const completeRotations = Math.floor(totalDegrees / 360);
-        const newScore = completeRotations * 1;
+        const newScore = Math.min(150, completeRotations * 2); // Max 150 points
 
         scoreRef.current = newScore;
         setScore(newScore);
