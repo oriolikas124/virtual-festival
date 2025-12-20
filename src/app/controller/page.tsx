@@ -384,7 +384,7 @@ export default function ControllerPage() {
         )}
       </main>
       {/* Connection Status */}
-      <div className="text-center mb-4">
+      {/* <div className="text-center mb-4"> */}
         {/* {currentPlayer && (
           <div style={{ marginTop: '1rem' }}>
             <p><strong>Your Avatar:</strong></p>
@@ -398,15 +398,15 @@ export default function ControllerPage() {
             <p><small>Position: ({Math.round(currentPlayer.x)}, {Math.round(currentPlayer.y)})</small></p>
           </div>
         )} */}
-        <div className="status-indicator text-white">
+        {/* <div className="status-indicator text-white">
           <div
             className={`connection-status ${
               isConnected ? "connected" : "disconnected"
             }`}
           ></div>
           {isConnected ? "🟢 Connected to Festival" : "🔴 Connecting..."}
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
 
       {/* joystick style */}
       <style jsx>{`

@@ -709,9 +709,8 @@ export default function NattoGamePage() {
                   <Image
                     src="/emojis/頑張れ.png"
                     alt="頑張れ"
-                    width={70}
-                    height={70}
-                    className="absolute right-0 -top-4"
+                    width={60}
+                    height={60}
                   />
                 </div>
                 <p className="text-lg text-gray-900 font-semibold leading-relaxed">

@@ -259,9 +259,8 @@ export default function Page() {
                 <Image
                   src="/emojis/頑張れ.png"
                   alt="頑張れ"
-                  width={70}
-                  height={70}
-                  className="absolute -right-2 -top-4"
+                  width={60}
+                  height={60}
                 />
               </div>
               <p className="text-lg font-semibold leading-relaxed text-gray-900 max-w-md">
