@@ -164,13 +164,13 @@ export default function DashboardPage() {
                 <tbody className="min-h-[200px]">
                   {game.players.slice(0, 8).map((p, i) => (
                     <tr key={i}>
-                      <td className="px-3 pt-1 pb-1 text-center text-white text-xl font-semibold">
+                      <td className="px-3 pt-1 pb-2 text-center text-white text-xl font-semibold">
                         {i + 1}
                       </td>
-                      <td className="px-3 pt-1 pb-1 text-center text-white text-xl font-semibold">
+                      <td className="px-3 pt-1 pb-2 text-center text-white text-xl font-semibold">
                         {p.name}
                       </td>
-                      <td className="px-3 pt-1 pb-1 text-center text-white text-xl font-semibold">
+                      <td className="px-3 pt-1 pb-2 text-center text-white text-xl font-semibold">
                         {p.points}
                       </td>
                     </tr>
@@ -260,13 +260,13 @@ export default function DashboardPage() {
               <tbody>
                 {totalRanking.map((player, index) => (
                   <tr key={index} className="border-b border-white/20">
-                    <td className="px-3 py-4 text-center text-white text-xl font-semibold">
+                    <td className="px-4 py-4 text-center text-white text-2xl font-semibold">
                       {index + 1}
                     </td>
-                    <td className="px-3 py-4 text-center text-white text-xl font-semibold">
+                    <td className="px-4 py-4 text-center text-white text-2xl font-semibold">
                       {player.name}
                     </td>
-                    <td className="px-3 py-4 text-center text-white text-xl font-semibold">
+                    <td className="px-4 py-4 text-center text-white text-2xl font-semibold">
                       {player.points}
                     </td>
                   </tr>

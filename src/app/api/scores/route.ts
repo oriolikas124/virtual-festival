@@ -55,14 +55,22 @@ export async function GET() {
   try {
     const scores = loadScores();
 
-    // Calculate total rankings
+    // Calculate total rankings - take best score from each zone per player
     const totalScores = new Map<string, number>();
-    
+
     (Object.values(scores) as ScoreEntry[][]).forEach((zoneScores) => {
       if (Array.isArray(zoneScores)) {
+        // Get best score per player in this zone
+        const bestPerPlayer = new Map<string, number>();
         zoneScores.forEach((entry: ScoreEntry) => {
-          const current = totalScores.get(entry.name) || 0;
-          totalScores.set(entry.name, current + entry.score);
+          const current = bestPerPlayer.get(entry.name) || 0;
+          bestPerPlayer.set(entry.name, Math.max(current, entry.score));
+        });
+
+        // Add to total
+        bestPerPlayer.forEach((score, name) => {
+          const current = totalScores.get(name) || 0;
+          totalScores.set(name, current + score);
         });
       }
     });
@@ -70,7 +78,7 @@ export async function GET() {
     const total = Array.from(totalScores.entries())
       .map(([name, score]) => ({ name, score }))
       .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
+      .slice(0, 11);
 
     return NextResponse.json({
       zone_1: scores.zone_1.slice(0, 8),
@@ -108,7 +116,7 @@ export async function POST(request: NextRequest) {
     const existingIndex = scores[zone].findIndex((entry: ScoreEntry) => entry.name === name);
 
     if (existingIndex >= 0) {
-      // Update if new score is better
+      // Update if new score is better, otherwise keep old score
       if (score > scores[zone][existingIndex].score) {
         scores[zone][existingIndex].score = score;
         scores[zone][existingIndex].timestamp = Date.now();
@@ -122,9 +130,19 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Sort by score descending and keep top 10
-    scores[zone].sort((a: ScoreEntry, b: ScoreEntry) => b.score - a.score);
-    scores[zone] = scores[zone].slice(0, 10);
+    // Remove duplicates - keep only the best score per player
+    const uniquePlayers = new Map<string, ScoreEntry>();
+    scores[zone].forEach((entry: ScoreEntry) => {
+      const existing = uniquePlayers.get(entry.name);
+      if (!existing || entry.score > existing.score) {
+        uniquePlayers.set(entry.name, entry);
+      }
+    });
+
+    // Convert back to array, sort by score descending
+    scores[zone] = Array.from(uniquePlayers.values())
+      .sort((a: ScoreEntry, b: ScoreEntry) => b.score - a.score)
+      .slice(0, 10);
 
     saveScores(scores);
 

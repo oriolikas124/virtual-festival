@@ -12,11 +12,6 @@
       "timestamp": 1764899761086
     },
     {
-      "name": "w",
-      "score": 60,
-      "timestamp": 1765500735153
-    },
-    {
       "name": "しぼ",
       "score": 57,
       "timestamp": 1764901214436
@@ -58,34 +53,9 @@
   ],
   "zone_6": [
     {
-      "name": "33",
-      "score": 100,
-      "timestamp": 1764290993990
-    },
-    {
       "name": "Player",
       "score": 90,
       "timestamp": 1763695531564
-    },
-    {
-      "name": "11",
-      "score": 80,
-      "timestamp": 1764290951255
-    },
-    {
-      "name": "22",
-      "score": 80,
-      "timestamp": 1764290980758
-    },
-    {
-      "name": "44",
-      "score": 40,
-      "timestamp": 1764291009508
-    },
-    {
-      "name": "ww",
-      "score": 10,
-      "timestamp": 1764898866346
     }
   ]
 }

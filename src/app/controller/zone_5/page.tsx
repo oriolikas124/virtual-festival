@@ -174,7 +174,7 @@ export default function Page() {
             <motion.p
               animate={{ opacity: currentNode.status ? 1 : 0.3 }}
               transition={{ duration: 0.3 }}
-              className="text-lg text-white font-semibold h-6"
+              className="text-lg text-white font-semibold"
             >
               {currentNode.status || ""}
             </motion.p>

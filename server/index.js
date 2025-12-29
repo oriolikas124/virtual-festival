@@ -583,12 +583,6 @@ io.on("connection", (socket) => {
 
 // HTTP routes
 app.get("/", (req, res) => {
-  const uptimeSeconds = process.uptime();
-  const hours = Math.floor(uptimeSeconds / 3600);
-  const minutes = Math.floor((uptimeSeconds % 3600) / 60);
-  const seconds = Math.floor(uptimeSeconds % 60);
-  const uptimeFormatted = `${hours}h ${minutes}m ${seconds}s`;
-
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -645,27 +639,6 @@ app.get("/", (req, res) => {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }
         }
-        .stats {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-          margin-top: 20px;
-        }
-        .stat-box {
-          background: rgba(255, 255, 255, 0.05);
-          padding: 20px;
-          border-radius: 12px;
-        }
-        .stat-value {
-          font-size: 32px;
-          font-weight: bold;
-          color: #feca57;
-        }
-        .stat-label {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.7);
-          margin-top: 5px;
-        }
         .footer {
           margin-top: 30px;
           font-size: 12px;
@@ -686,18 +659,6 @@ app.get("/", (req, res) => {
         <div class="notice">
           サーバーに接続しました。</br>
           このページを閉じてStep 3.に進んでください。
-        </div>
-        <div class="stats">
-          <div class="stat-box">
-            <div class="stat-value">${
-              Object.keys(gameState.players).length
-            }</div>
-            <div class="stat-label">Players Online</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-value">${uptimeFormatted}</div>
-            <div class="stat-label">Uptime</div>
-          </div>
         </div>
         <div class="footer">
           Socket.io server ready • Port ${PORT}
