@@ -285,6 +285,33 @@ function checkCollision(x, y) {
   return !isInWalkableArea(x, y);
 }
 
+// Advanced collision response - tries to slide along walls
+// When direct movement is blocked, try moving only in X or only in Y direction
+function moveWithCollisionResponse(player, moveX, moveY) {
+  const newX = player.x + moveX;
+  const newY = player.y + moveY;
+
+  // If the full movement is valid, apply it
+  if (!checkCollision(newX, newY)) {
+    return { x: newX, y: newY, moved: true };
+  }
+
+  // Full movement is blocked, try sliding along walls
+  // Try moving only in X direction
+  const newXOnly = player.x + moveX;
+  if (!checkCollision(newXOnly, player.y)) {
+    return { x: newXOnly, y: player.y, moved: true };
+  }
+
+  // Try moving only in Y direction
+  if (!checkCollision(player.x, player.y + moveY)) {
+    return { x: player.x, y: player.y + moveY, moved: true };
+  }
+
+  // If both fail, no movement possible
+  return { x: player.x, y: player.y, moved: false };
+}
+
 // Load map data on startup
 loadMapData();
 
@@ -339,6 +366,48 @@ function getRandomSpawnPosition() {
 
 function broadcastGameState() {
   io.emit("players", gameState.players);
+}
+
+// Check distance between two players
+function getDistanceBetweenPlayers(player1, player2) {
+  const dx = player1.x - player2.x;
+  const dy = player1.y - player2.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+// Get nearby players for a given player (within a certain distance)
+const NEARBY_DISTANCE = 80; // Distance threshold for "nearby" players
+
+function getNearbyPlayers(socketId) {
+  const player = players.get(socketId);
+  if (!player) return [];
+
+  const nearbyPlayers = [];
+  players.forEach((otherPlayer, otherSocketId) => {
+    if (otherSocketId !== socketId) {
+      const distance = getDistanceBetweenPlayers(player, otherPlayer);
+      if (distance <= NEARBY_DISTANCE) {
+        nearbyPlayers.push({
+          socketId: otherSocketId,
+          name: otherPlayer.name,
+          distance: distance,
+        });
+      }
+    }
+  });
+
+  return nearbyPlayers;
+}
+
+// Check and notify players about nearby players
+function checkAndNotifyNearbyPlayers() {
+  players.forEach((player, socketId) => {
+    const nearbyPlayers = getNearbyPlayers(socketId);
+    const socket = io.sockets.sockets.get(socketId);
+    if (socket) {
+      socket.emit("nearbyPlayers", nearbyPlayers);
+    }
+  });
 }
 
 // Socket.io event handlers
@@ -412,28 +481,30 @@ io.on("connection", (socket) => {
     if (direction) {
       // Handle directional movement (from controller)
       const moveSpeed = 0.1;
-      let newX = player.x;
-      let newY = player.y;
+      let moveX = 0;
+      let moveY = 0;
 
       switch (direction) {
         case "up":
-          newY = player.y - moveSpeed;
+          moveY = -moveSpeed;
           break;
         case "down":
-          newY = player.y + moveSpeed;
+          moveY = moveSpeed;
           break;
         case "left":
-          newX = player.x - moveSpeed;
+          moveX = -moveSpeed;
           break;
         case "right":
-          newX = player.x + moveSpeed;
+          moveX = moveSpeed;
           break;
       }
 
-      // Check collision before updating position
-      if (!checkCollision(newX, newY)) {
-        player.x = newX;
-        player.y = newY;
+      // Use collision response for smooth wall sliding
+      const moveResult = moveWithCollisionResponse(player, moveX, moveY);
+
+      if (moveResult.moved) {
+        player.x = moveResult.x;
+        player.y = moveResult.y;
       }
     } else if (x !== undefined && y !== undefined) {
       // Handle absolute position (from venue map clicks)
@@ -458,22 +529,20 @@ io.on("connection", (socket) => {
 
     if (speed > 0) {
       // Calculate movement based on vector with slow constant speed
-      const moveSpeed = 1.2; // Low speed
+      const moveSpeed = 0.9; // Low speed
       const moveX = x * moveSpeed;
       const moveY = y * moveSpeed;
 
-      // Calculate new position - NO rectangular bounds, only walkable polygon check
-      const newX = player.x + moveX;
-      const newY = player.y + moveY;
+      // Use collision response to handle wall sliding
+      const moveResult = moveWithCollisionResponse(player, moveX, moveY);
 
-      // Check collision before updating position
-      if (!checkCollision(newX, newY)) {
+      if (moveResult.moved) {
         const oldZone = player.currentZone;
-        player.x = newX;
-        player.y = newY;
+        player.x = moveResult.x;
+        player.y = moveResult.y;
 
         // Check if player entered or left a zone
-        const newZone = getPlayerZone(newX, newY);
+        const newZone = getPlayerZone(moveResult.x, moveResult.y);
 
         if (newZone !== oldZone) {
           player.currentZone = newZone;
@@ -495,6 +564,9 @@ io.on("connection", (socket) => {
       // Update game state
       gameState.players[socket.id] = { ...player };
       broadcastGameState();
+
+      // Check and notify about nearby players after movement
+      checkAndNotifyNearbyPlayers();
     }
   });
 
@@ -548,11 +620,24 @@ io.on("connection", (socket) => {
   socket.on("ping", () => {
     socket.emit("pong");
   });
+
+  // Handle sending heart to nearby players
+  socket.on("sendHeart", () => {
+    const player = players.get(socket.id);
+    if (!player) return;
+
+    // Broadcast heart animation to all viewers/players
+    io.emit("playerHeart", {
+      socketId: socket.id,
+      playerName: player.name,
+      x: player.x,
+      y: player.y,
+    });
+  });
 });
 
 // HTTP routes
 app.get("/", (req, res) => {
-
   res.send(`
     <!DOCTYPE html>
     <html lang="en">

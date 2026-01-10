@@ -361,6 +361,48 @@ function broadcastGameState() {
   io.emit("players", gameState.players);
 }
 
+// Check distance between two players
+function getDistanceBetweenPlayers(player1, player2) {
+  const dx = player1.x - player2.x;
+  const dy = player1.y - player2.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+// Get nearby players for a given player (within a certain distance)
+const NEARBY_DISTANCE = 80; // Distance threshold for "nearby" players
+
+function getNearbyPlayers(socketId) {
+  const player = players.get(socketId);
+  if (!player) return [];
+
+  const nearbyPlayers = [];
+  players.forEach((otherPlayer, otherSocketId) => {
+    if (otherSocketId !== socketId) {
+      const distance = getDistanceBetweenPlayers(player, otherPlayer);
+      if (distance <= NEARBY_DISTANCE) {
+        nearbyPlayers.push({
+          socketId: otherSocketId,
+          name: otherPlayer.name,
+          distance: distance,
+        });
+      }
+    }
+  });
+
+  return nearbyPlayers;
+}
+
+// Check and notify players about nearby players
+function checkAndNotifyNearbyPlayers() {
+  players.forEach((player, socketId) => {
+    const nearbyPlayers = getNearbyPlayers(socketId);
+    const socket = io.sockets.sockets.get(socketId);
+    if (socket) {
+      socket.emit("nearbyPlayers", nearbyPlayers);
+    }
+  });
+}
+
 // Socket.io event handlers
 io.on("connection", (socket) => {
   console.log(`🔌 Client connected: ${socket.id}`);
@@ -515,6 +557,9 @@ io.on("connection", (socket) => {
       // Update game state
       gameState.players[socket.id] = { ...player };
       broadcastGameState();
+      
+      // Check and notify about nearby players after movement
+      checkAndNotifyNearbyPlayers();
     }
   });
 
@@ -578,6 +623,20 @@ io.on("connection", (socket) => {
   // Handle ping/pong for connection monitoring
   socket.on("ping", () => {
     socket.emit("pong");
+  });
+
+  // Handle sending heart to nearby players
+  socket.on("sendHeart", () => {
+    const player = players.get(socket.id);
+    if (!player) return;
+
+    // Broadcast heart animation to all viewers/players
+    io.emit("playerHeart", {
+      socketId: socket.id,
+      playerName: player.name,
+      x: player.x,
+      y: player.y,
+    });
   });
 });
 

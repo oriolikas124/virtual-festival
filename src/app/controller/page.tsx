@@ -61,9 +61,12 @@ export default function ControllerPage() {
     isNicknameSet,
     setIsNicknameSet,
     currentZone,
+    nearbyPlayers,
+    sendHeart,
   } = useSocket();
   const [currentState, setCurrentState] = useState<StateType>("intro");
   const [tempNickname, setTempNickname] = useState("");
+  const [showHeartSent, setShowHeartSent] = useState(false);
 
   // Joystick state
   const [joystickPosition, setJoystickPosition] = useState<JoystickPosition>({
@@ -275,6 +278,14 @@ export default function ControllerPage() {
     handleTouchEnd,
   ]);
 
+  // Handle sending heart
+  const handleSendHeart = useCallback(() => {
+    sendHeart();
+    setShowHeartSent(true);
+    // Reset animation after a short delay
+    setTimeout(() => setShowHeartSent(false), 1000);
+  }, [sendHeart]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 backdrop-blur-sm">
       <Header />
@@ -284,7 +295,7 @@ export default function ControllerPage() {
         {/* INTRO STATE */}
         {currentState === "intro" && (
           <div className="flex flex-col items-center justify-center w-full">
-            <div className="w-full mt-8">
+            <div className="w-full mt-4">
               <div className="flex flex-col items-center">
                 <h1 className="w-full text-2xl bg-theme-purple font-bold py-4">
                   Welcome to <br /> Virtual Festival
@@ -295,7 +306,7 @@ export default function ControllerPage() {
               </div>
             </div>
 
-            <div className="w-full space-y-4 mt-32">
+            <div className="w-full mt-8 space-y-6">
               <input
                 type="text"
                 value={tempNickname}
@@ -363,6 +374,25 @@ export default function ControllerPage() {
 
             {/* Real Joystick */}
             <div className="controller-container mb-8">
+              {/* Heart button - shows when nearby players exist */}
+              <div
+                className={`heart-button-container transition-all duration-300 ${
+                  nearbyPlayers.length > 0
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-75 pointer-events-none"
+                }`}
+              >
+                <motion.button
+                  onClick={handleSendHeart}
+                  className={`heart-button ${showHeartSent ? "heart-sent" : ""}`}
+                  whileTap={{ scale: 0.9 }}
+                  animate={showHeartSent ? { scale: [1, 1.3, 1] } : {}}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Image src="/icons/heart.svg" alt="Heart" width={80} height={80} />
+                </motion.button>
+              </div>
+
               <div className="joystick-wrapper">
                 <div
                   ref={joystickRef}
@@ -410,11 +440,16 @@ export default function ControllerPage() {
 
       {/* joystick style */}
       <style jsx>{`
+        .heart-button-container {
+          display: flex;
+          justify-content: center;
+        }
+
         .joystick-wrapper {
           display: flex;
           justify-content: center;
           align-items: center;
-          padding: 2rem;
+          padding: 1rem;
         }
 
         .joystick-base {

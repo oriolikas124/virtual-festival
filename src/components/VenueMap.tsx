@@ -22,12 +22,19 @@ interface PlayerSprite {
     isMoving: boolean;
 }
 
+interface HeartAnimation {
+    socketId: string;
+    container: Phaser.GameObjects.Container;
+    startTime: number;
+}
+
 export const VenueMap = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const gameRef = useRef<Phaser.Game | null>(null);
     const socketRef = useRef<Socket | null>(null);
     const sceneRef = useRef<Phaser.Scene | null>(null);
     const playersRef = useRef<Map<string, PlayerSprite>>(new Map());
+    const heartAnimationsRef = useRef<Map<string, HeartAnimation>>(new Map());
 
     // Function to create a player sprite with nickname
     const createPlayerSprite = useCallback((scene: Phaser.Scene, socketId: string, player: Player) => {
@@ -104,6 +111,62 @@ export const VenueMap = () => {
         });
     }, [createPlayerSprite]);
 
+    // Function to show heart animation above a player
+    const showHeartAnimation = useCallback((socketId: string) => {
+        const scene = sceneRef.current;
+        const playerSprite = playersRef.current.get(socketId);
+        if (!scene || !playerSprite) return;
+
+        // Create heart container at player position
+        const heartContainer = scene.add.container(
+            playerSprite.container.x,
+            playerSprite.container.y - 60
+        );
+
+        // Create heart text (emoji)
+        const heartText = scene.add.text(0, 0, '❤️', {
+            fontSize: '48px',
+            align: 'center'
+        });
+        heartText.setOrigin(0.5, 0.5);
+
+        heartContainer.add(heartText);
+        heartContainer.setDepth(200); // Above everything
+        heartContainer.setAlpha(1);
+        heartContainer.setScale(0.3);
+
+        // Store animation reference
+        const animation: HeartAnimation = {
+            socketId,
+            container: heartContainer,
+            startTime: Date.now()
+        };
+        heartAnimationsRef.current.set(`${socketId}_${Date.now()}`, animation);
+
+        // Animate: scale up, float up, then fade out
+        scene.tweens.add({
+            targets: heartContainer,
+            scaleX: 1.2,
+            scaleY: 1.2,
+            y: heartContainer.y - 50,
+            duration: 600,
+            ease: 'Back.easeOut',
+            onComplete: () => {
+                scene.tweens.add({
+                    targets: heartContainer,
+                    alpha: 0,
+                    y: heartContainer.y - 30,
+                    duration: 400,
+                    ease: 'Power2',
+                    onComplete: () => {
+                        heartContainer.destroy();
+                        heartAnimationsRef.current.delete(`${socketId}_${animation.startTime}`);
+                    }
+                });
+            }
+        });
+    }, []);
+
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
@@ -152,6 +215,11 @@ export const VenueMap = () => {
 
         socket.on('players', (players: Record<string, Player>) => {
             updatePlayers(players);
+        });
+
+        // Listen for heart animations
+        socket.on('playerHeart', (data: { socketId: string; playerName: string }) => {
+            showHeartAnimation(data.socketId);
         });
 
         socketRef.current = socket;
@@ -455,7 +523,7 @@ export const VenueMap = () => {
             players.clear();
             sceneRef.current = null;
         };
-    }, [updatePlayers]);
+    }, [updatePlayers, showHeartAnimation]);
 
     return <div ref={containerRef} style={{ width: '100%', height: '100vh' }} />;
 };

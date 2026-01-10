@@ -19,6 +19,12 @@ interface Player {
   currentZone?: string | null;
 }
 
+interface NearbyPlayer {
+  socketId: string;
+  name: string;
+  distance: number;
+}
+
 interface VectorData {
   x: number;
   y: number;
@@ -35,9 +41,11 @@ interface SocketContextType {
   isNicknameSet: boolean;
   setIsNicknameSet: (value: boolean) => void;
   currentZone: string | null;
+  nearbyPlayers: NearbyPlayer[];
   // Helper methods
   emitMovement: (direction: string) => void;
   emitMoveVector: (vectorData: VectorData) => void;
+  sendHeart: () => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -49,6 +57,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [nickname, setNicknameState] = useState("");
   const [isNicknameSet, setIsNicknameSet] = useState(false);
   const [currentZone, setCurrentZone] = useState<string | null>(null);
+  const [nearbyPlayers, setNearbyPlayers] = useState<NearbyPlayer[]>([]);
   const socketRef = useRef<Socket | null>(null);
 
   // Wrapper for setNickname that also saves to localStorage
@@ -82,6 +91,13 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const emitMoveVector = (vectorData: VectorData) => {
     if (socketRef.current && isConnected) {
       socketRef.current.emit("moveVector", vectorData);
+    }
+  };
+
+  // Helper function to send heart
+  const sendHeart = () => {
+    if (socketRef.current && isConnected) {
+      socketRef.current.emit("sendHeart");
     }
   };
 
@@ -175,6 +191,11 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       setCurrentZone(null);
     });
 
+    // Listen for nearby players updates
+    newSocket.on("nearbyPlayers", (players: NearbyPlayer[]) => {
+      setNearbyPlayers(players);
+    });
+
     newSocket.on("reconnect", () => {
       console.log("🔄 Reconnected to server");
       setIsConnected(true);
@@ -205,8 +226,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     isNicknameSet,
     setIsNicknameSet,
     currentZone,
+    nearbyPlayers,
     emitMovement,
     emitMoveVector,
+    sendHeart,
   };
 
   return (
