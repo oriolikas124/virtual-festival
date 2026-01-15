@@ -125,6 +125,7 @@
     "v3_up_1": {
       "type": "video",
       "video": "videos/6.mp4",
+      "status": "小鹿がニコニコせんべいをモグモグ、傍には桜がひらひら",
       "duration": 6000,
       "choices": [
         {
@@ -143,6 +144,7 @@
     "v3_up_2": {
       "type": "video",
       "video": "videos/6.mp4",
+      "status": "小鹿がニコニコせんべいをモグモグ、傍には桜がひらひら",
       "duration": 6000,
       "choices": [
         {
