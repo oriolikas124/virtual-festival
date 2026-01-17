@@ -43,13 +43,13 @@ export async function POST(request: NextRequest) {
 
     // Style-specific prompts
     const stylePrompts: Record<string, string> = {
-      'Anime': 'Person wearing vibrant Japanese festival kimono, anime-style patterns. Anime art style on kimono and background, preserve face exactly. Festival lanterns backdrop.',
+      'Anime': 'Person wearing vibrant Japanese festival kimono, anime-style patterns. Anime art style on kimono and background, preserve facial features. Festival lanterns backdrop.',
 
-      'Art': 'Person in elegant traditional Japanese kimono, intricate patterns. Ukiyo-e woodblock style on clothing and background, preserve face exactly. Serene cherry blossom scene.',
+      'Art': 'Person in elegant traditional Japanese kimono, intricate patterns. Ukiyo-e woodblock style on clothing and background, preserve facial features. Serene cherry blossom scene.',
 
-      'Cyber': 'Person wearing Japanese kimono, cyberpunk-style patterns with neon circuits. Cyberpunk style on kimono and background, futuristic glowing hair, preserve face exactly. Futuristic neon lights backdrop.',
+      'Cyber': 'Person wearing Japanese kimono, cyberpunk-style patterns with neon circuits. Cyberpunk style on kimono and background, futuristic glowing hair, preserve facial features. Futuristic neon lights backdrop.',
 
-      'Ghibli': 'Person in beautiful Japanese festival kimono. Studio Ghibli watercolor style on clothing and background, preserve face exactly. Nostalgic festival with paper lanterns.'
+      'Ghibli': 'Person in beautiful Japanese festival kimono. Studio Ghibli watercolor style on clothing and background, preserve facial features. Nostalgic festival with paper lanterns.'
     };
 
     const prompt = stylePrompts[style] || stylePrompts['Anime'];
