@@ -35,17 +35,17 @@ export const InfiniteGallery = ({
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [itemWidth, setItemWidth] = useState(150);
 
-  // Reverse images so newest appear first
-  const reversedImages = React.useMemo(() => [...images].reverse(), [images]);
+  // Images are already sorted by API (newest first), use directly
+  const sortedImages = images;
 
   // Split images into two rows
   const row1Images = React.useMemo(
-    () => reversedImages.filter((_, i) => i % 2 === 0),
-    [reversedImages]
+    () => sortedImages.filter((_, i) => i % 2 === 0),
+    [sortedImages]
   );
   const row2Images = React.useMemo(
-    () => reversedImages.filter((_, i) => i % 2 === 1),
-    [reversedImages]
+    () => sortedImages.filter((_, i) => i % 2 === 1),
+    [sortedImages]
   );
 
   // Calculate item width based on container height (responsive)

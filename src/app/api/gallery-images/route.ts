@@ -16,16 +16,29 @@ export async function GET() {
     
     // Filter only image files (jpg, jpeg, png, webp, gif)
     const imageExtensions = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
+    
+    // Helper function to extract timestamp from filename
+    // Format: kimono-anime-1764901384449-germfm.png -> 1764901384449
+    const getTimestamp = (filename: string): number => {
+      const parts = filename.split("-");
+      // Timestamp is at index 2 (third part)
+      if (parts.length >= 3) {
+        const timestamp = parseInt(parts[2], 10);
+        if (!isNaN(timestamp)) {
+          return timestamp;
+        }
+      }
+      return 0;
+    };
+
     const images = files
       .filter((file) => {
         const ext = path.extname(file).toLowerCase();
         return imageExtensions.includes(ext);
       })
       .sort((a, b) => {
-        // Sort numerically if filenames are numbers
-        const numA = parseInt(a.replace(/\D/g, "")) || 0;
-        const numB = parseInt(b.replace(/\D/g, "")) || 0;
-        return numA - numB;
+        // Sort by timestamp in filename (newest first - descending order)
+        return getTimestamp(b) - getTimestamp(a);
       })
       .map((file) => `/images/zone_1/${file}`);
 
