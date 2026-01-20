@@ -553,13 +553,13 @@ export default function Page() {
                 <a
                   href={generatedImage}
                   download="kimono-result.jpg"
-                  className="p-3 bg-green-500 text-black rounded-lg font-semibold text-center active:scale-95 transition-transform"
+                  className="p-3 bg-green-400 text-black rounded-xl font-semibold text-center active:scale-95 transition-transform"
                 >
                   画像をダウンロード
                 </a>
                 <Link
                   href="/controller/"
-                  className="p-3 bg-theme-yellow text-black rounded-lg font-semibold text-center active:scale-95 transition-transform"
+                  className="p-3 bg-theme-yellow text-black rounded-xl font-semibold text-center active:scale-95 transition-transform"
                 >
                   コントローラーに戻る
                 </Link>
