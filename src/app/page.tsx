@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-[url('/background/background.jpg')] bg-cover bg-center">
       <main className="container flex flex-col justify-center mx-auto px-4 py-8 flex-1">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-center flex-wrap items-center">
           <div className='flex flex-col items-center'>
             <Image
               src="/logo.svg"
@@ -24,6 +24,13 @@ export default function Home() {
                 className="block mt-8 text-center text-2xl bg-white text-gray-800 px-6 py-3 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg"
               >
                 QR Page
+              </Link>
+              <Link
+                href="/gallery"
+                target='_blank'
+                className="block mt-8 text-center text-2xl bg-white text-gray-800 px-6 py-3 rounded-lg shadow-md hover:bg-blue-100 hover:shadow-lg"
+              >
+                Gallery
               </Link>
               <Link
                 href="/dashboard"
