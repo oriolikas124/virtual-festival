@@ -142,6 +142,20 @@ export async function POST(request: NextRequest) {
     const imageUrl = `/images/zone_1/${filename}`;
     console.log('[KIMONO] Returning image URL:', imageUrl);
 
+    // Notify server to broadcast gallery update
+    try {
+      const serverUrl = process.env.SOCKET_SERVER_URL || 'http://localhost:3001';
+      await fetch(`${serverUrl}/broadcast/gallery-update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl }),
+      });
+      console.log('[KIMONO] Gallery update broadcasted');
+    } catch (broadcastError) {
+      console.error('[KIMONO] Failed to broadcast gallery update:', broadcastError);
+      // Don't fail the request if broadcast fails
+    }
+
     return NextResponse.json({
       success: true,
       imageUrl: imageUrl,

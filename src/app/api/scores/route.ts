@@ -146,6 +146,20 @@ export async function POST(request: NextRequest) {
 
     saveScores(scores);
 
+    // Notify server to broadcast scores update
+    try {
+      const serverUrl = process.env.SOCKET_SERVER_URL || 'http://localhost:3001';
+      await fetch(`${serverUrl}/broadcast/scores-update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ zone, name, score }),
+      });
+      console.log('[SCORES] Scores update broadcasted');
+    } catch (broadcastError) {
+      console.error('[SCORES] Failed to broadcast scores update:', broadcastError);
+      // Don't fail the request if broadcast fails
+    }
+
     return NextResponse.json({ success: true, scores: scores[zone] });
   } catch (error) {
     console.error("Error saving score:", error);

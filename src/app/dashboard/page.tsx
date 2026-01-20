@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { InfiniteGallery } from "@/components/ui/infinite-gallery";
 import Link from "next/link";
 import Image from "next/image";
+import { io } from "socket.io-client";
 
 interface GameRanking {
   title: string;
@@ -40,82 +41,105 @@ export default function DashboardPage() {
 
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
 
-  // Fetch gallery images
-  useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const response = await fetch("/api/gallery-images");
-        const data = await response.json();
-        setGalleryImages(data.images || []);
-      } catch (error) {
-        console.error("❌ Error fetching gallery images:", error);
-      }
-    };
+  // Helper function to fetch scores
+  const fetchScores = async () => {
+    try {
+      const response = await fetch("/api/scores");
+      const data = await response.json();
 
-    fetchImages();
-    // Refresh every 60 seconds to pick up new images
-    const interval = setInterval(fetchImages, 60000);
-    return () => clearInterval(interval);
-  }, []);
+      console.log("📊 Scores fetched from API:", data);
 
-  useEffect(() => {
-    // Fetch scores from API
-    const fetchScores = async () => {
-      try {
-        const response = await fetch("/api/scores");
-        const data = await response.json();
-
-        console.log("📊 Scores fetched from API:", data);
-
-        setGameRankings([
-          {
-            title: "山手線クイズ",
-            players: (data.zone_2 || []).map((p: RankingEntry) => ({
-              name: p.name,
-              points: p.score,
-            })),
-          },
-          {
-            title: "アナウンスクイズ",
-            players: (data.zone_3 || []).map((p: RankingEntry) => ({
-              name: p.name,
-              points: p.score,
-            })),
-          },
-          {
-            title: "富士山パズル",
-            players: (data.zone_4 || []).map((p: RankingEntry) => ({
-              name: p.name,
-              points: p.score,
-            })),
-          },
-          {
-            title: "納豆混ぜゲーム",
-            players: (data.zone_6 || []).map((p: RankingEntry) => ({
-              name: p.name,
-              points: p.score,
-            })),
-          },
-        ]);
-
-        setTotalRanking(
-          (data.total || []).map((p: RankingEntry) => ({
+      setGameRankings([
+        {
+          title: "山手線クイズ",
+          players: (data.zone_2 || []).map((p: RankingEntry) => ({
             name: p.name,
             points: p.score,
-          }))
-        );
-      } catch (error) {
-        console.error("❌ Error fetching scores:", error);
-      }
+          })),
+        },
+        {
+          title: "アナウンスクイズ",
+          players: (data.zone_3 || []).map((p: RankingEntry) => ({
+            name: p.name,
+            points: p.score,
+          })),
+        },
+        {
+          title: "富士山パズル",
+          players: (data.zone_4 || []).map((p: RankingEntry) => ({
+            name: p.name,
+            points: p.score,
+          })),
+        },
+        {
+          title: "納豆混ぜゲーム",
+          players: (data.zone_6 || []).map((p: RankingEntry) => ({
+            name: p.name,
+            points: p.score,
+          })),
+        },
+      ]);
+
+      setTotalRanking(
+        (data.total || []).map((p: RankingEntry) => ({
+          name: p.name,
+          points: p.score,
+        }))
+      );
+    } catch (error) {
+      console.error("❌ Error fetching scores:", error);
+    }
+  };
+
+  // Helper function to fetch gallery images
+  const fetchImages = async () => {
+    try {
+      const response = await fetch("/api/gallery-images");
+      const data = await response.json();
+      setGalleryImages(data.images || []);
+    } catch (error) {
+      console.error("❌ Error fetching gallery images:", error);
+    }
+  };
+
+  // Socket connection for real-time updates
+  useEffect(() => {
+    const serverUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+    const socket = io(serverUrl, {
+      transports: ["websocket", "polling"],
+    });
+
+    socket.on("connect", () => {
+      console.log("🔌 Dashboard connected to socket server");
+    });
+
+    // Listen for gallery updates
+    socket.on("gallery:update", (data: { imageUrl: string }) => {
+      console.log("📸 Gallery update received:", data.imageUrl);
+      // Add new image to the beginning of the list
+      setGalleryImages((prev) => [data.imageUrl, ...prev]);
+    });
+
+    // Listen for scores updates
+    socket.on("scores:update", (data: { zone: string; name: string; score: number }) => {
+      console.log(`🎮 Scores update received: ${data.name} scored ${data.score} in ${data.zone}`);
+      // Fetch fresh scores to update rankings
+      fetchScores();
+    });
+
+    socket.on("disconnect", () => {
+      console.log("🔌 Dashboard disconnected from socket server");
+    });
+
+    return () => {
+      socket.disconnect();
     };
+  }, []);
 
-    // Fetch immediately
+  // Initial fetch on mount
+  useEffect(() => {
+    fetchImages();
     fetchScores();
-
-    // Then fetch every 20 seconds
-    const interval = setInterval(fetchScores, 20000);
-
-    return () => clearInterval(interval);
   }, []);
 
   // Rankings will be populated from live data in the future; mock logic removed

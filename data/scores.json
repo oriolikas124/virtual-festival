@@ -53,6 +53,11 @@
   ],
   "zone_6": [
     {
+      "name": "124",
+      "score": 150,
+      "timestamp": 1768874376752
+    },
+    {
       "name": "Player",
       "score": 90,
       "timestamp": 1763695531564
