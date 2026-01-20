@@ -140,23 +140,23 @@ export default function QRPage() {
                 >
                     ← 設定を変更
                 </button>
-                <div className="flex justify-center gap-24">
+                <div className="flex justify-center gap-32">
                     <div>
                         <Link href="/">
                             <h1 className="text-6xl text-white text-center font-bold mb-8">Step 1.</h1>
                         </Link>
-                        <div ref={wifiQrRef} className="mb-4"></div>
-                        <p className="text-2xl text-center text-white">スキャンして Wi-Fi に接続</p>
+                        <div ref={wifiQrRef} className="mb-8"></div>
+                        <p className="text-3xl font-semibold text-center text-white">Wi-Fi に接続</p>
                     </div>
                     <div>
                         <h2 className="text-6xl text-white text-center font-bold mb-8">Step 2.</h2>
-                        <div ref={serverQrRef} className="mb-4"></div>
-                        <p className="text-2xl text-center text-white">スキャンしてサーバーに接続</p>
+                        <div ref={serverQrRef} className="mb-8"></div>
+                        <p className="text-3xl font-semibold text-center text-white">サーバーに接続</p>
                     </div>
                     <div>
                         <h2 className="text-6xl text-white text-center font-bold mb-8">Step 3.</h2>
-                        <div ref={festivalQrRef} className="mb-4"></div>
-                        <p className="text-2xl text-center text-white">スキャンしてフェスティバルを楽しむ</p>
+                        <div ref={festivalQrRef} className="mb-8"></div>
+                        <p className="text-3xl font-semibold text-center text-white">祭りを楽しむ</p>
                     </div>
                 </div>
             </main>
