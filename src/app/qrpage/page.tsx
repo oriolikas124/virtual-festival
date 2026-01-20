@@ -24,7 +24,7 @@ const renderQrCode = async (element: HTMLDivElement, text: string) => {
 export default function QRPage() {
     const [wifiName, setWifiName] = useState<string>('VirtualFestival');
     const [wifiPassword, setWifiPassword] = useState<string>('virtualfestival123');
-    const [ipAddress, setIpAddress] = useState<string>('192.168.11.3');
+    const [ipAddress, setIpAddress] = useState<string>('192.168.11.2');
     const [showQR, setShowQR] = useState(false);
 
     const wifiQrRef = useRef<HTMLDivElement>(null);
