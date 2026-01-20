@@ -12,6 +12,11 @@
       "timestamp": 1764899761086
     },
     {
+      "name": "King",
+      "score": 72,
+      "timestamp": 1768885919017
+    },
+    {
       "name": "しぼ",
       "score": 57,
       "timestamp": 1764901214436
@@ -41,6 +46,11 @@
   ],
   "zone_4": [
     {
+      "name": "King",
+      "score": 100,
+      "timestamp": 1768885774225
+    },
+    {
       "name": "Ami",
       "score": 60,
       "timestamp": 1764900953293
@@ -61,6 +71,11 @@
       "name": "124",
       "score": 150,
       "timestamp": 1768874376752
+    },
+    {
+      "name": "King",
+      "score": 150,
+      "timestamp": 1768885715417
     },
     {
       "name": "Player",
