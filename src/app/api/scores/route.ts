@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import https from "https";
 
 interface ScoreEntry {
   name: string;
@@ -148,12 +149,30 @@ export async function POST(request: NextRequest) {
 
     // Notify server to broadcast scores update
     try {
-      const serverUrl = process.env.SOCKET_SERVER_URL || 'http://localhost:3001';
-      await fetch(`${serverUrl}/broadcast/scores-update`, {
+      const postData = JSON.stringify({ zone, name, score });
+      
+      const options = {
+        hostname: 'localhost',
+        port: 3001,
+        path: '/broadcast/scores-update',
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ zone, name, score }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData),
+        },
+        rejectUnauthorized: false, // Allow self-signed certificates
+      };
+
+      await new Promise<void>((resolve, reject) => {
+        const req = https.request(options, (res) => {
+          res.on('data', () => {}); // Consume response
+          res.on('end', () => resolve());
+        });
+        req.on('error', reject);
+        req.write(postData);
+        req.end();
       });
+      
       console.log('[SCORES] Scores update broadcasted');
     } catch (broadcastError) {
       console.error('[SCORES] Failed to broadcast scores update:', broadcastError);

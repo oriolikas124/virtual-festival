@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import path from 'path';
+import https from 'https';
 import { Buffer } from 'buffer';
 
 const ai = new GoogleGenAI({
@@ -144,12 +145,30 @@ export async function POST(request: NextRequest) {
 
     // Notify server to broadcast gallery update
     try {
-      const serverUrl = process.env.SOCKET_SERVER_URL || 'http://localhost:3001';
-      await fetch(`${serverUrl}/broadcast/gallery-update`, {
+      const postData = JSON.stringify({ imageUrl });
+      
+      const options = {
+        hostname: 'localhost',
+        port: 3001,
+        path: '/broadcast/gallery-update',
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData),
+        },
+        rejectUnauthorized: false, // Allow self-signed certificates
+      };
+
+      await new Promise<void>((resolve, reject) => {
+        const req = https.request(options, (res) => {
+          res.on('data', () => {}); // Consume response
+          res.on('end', () => resolve());
+        });
+        req.on('error', reject);
+        req.write(postData);
+        req.end();
       });
+      
       console.log('[KIMONO] Gallery update broadcasted');
     } catch (broadcastError) {
       console.error('[KIMONO] Failed to broadcast gallery update:', broadcastError);

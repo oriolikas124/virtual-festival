@@ -104,9 +104,10 @@ export default function DashboardPage() {
 
   // Socket connection for real-time updates
   useEffect(() => {
-    const serverUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3001";
+    const serverUrl = "https://localhost:3001";
     const socket = io(serverUrl, {
       transports: ["websocket", "polling"],
+      rejectUnauthorized: false, // Allow self-signed certificates
     });
 
     socket.on("connect", () => {

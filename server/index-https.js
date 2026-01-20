@@ -27,6 +27,9 @@ app.use(
   })
 );
 
+// Parse JSON bodies
+app.use(express.json());
+
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, "../public")));
 
@@ -731,6 +734,26 @@ app.get("/status", (req, res) => {
     mapSize: gameState.mapSize,
     serverTime: new Date().toISOString(),
   });
+});
+
+// ============================================
+// Event Broadcasting Endpoints (for API routes)
+// ============================================
+
+// Broadcast gallery update event (called when new image is generated)
+app.post("/broadcast/gallery-update", (req, res) => {
+  const { imageUrl } = req.body;
+  console.log("📸 Broadcasting gallery update:", imageUrl);
+  io.emit("gallery:update", { imageUrl, timestamp: Date.now() });
+  res.json({ success: true, message: "Gallery update broadcasted" });
+});
+
+// Broadcast scores update event (called when new score is saved)
+app.post("/broadcast/scores-update", (req, res) => {
+  const { zone, name, score } = req.body;
+  console.log(`🎮 Broadcasting scores update: ${name} scored ${score} in ${zone}`);
+  io.emit("scores:update", { zone, name, score, timestamp: Date.now() });
+  res.json({ success: true, message: "Scores update broadcasted" });
 });
 
 // Start server
