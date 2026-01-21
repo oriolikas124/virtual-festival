@@ -5,7 +5,7 @@ import BackBtn from "@/components/ui/BackBtn";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link  from "next/link";
+import Link from "next/link";
 
 type StateType = "guide" | "preview" | "choose-style" | "result";
 
@@ -553,8 +553,14 @@ export default function Page() {
                 <a
                   href={generatedImage}
                   download="kimono-result.jpg"
-                  className="p-3 bg-green-400 text-black rounded-xl font-semibold text-center active:scale-95 transition-transform"
+                  className="flex items-center gap-2 p-3 bg-green-400 text-black rounded-xl font-semibold text-center active:scale-95 transition-transform"
                 >
+                  <Image
+                    src="/icons/download.svg"
+                    alt="download"
+                    width={24}
+                    height={24}
+                  />
                   画像をダウンロード
                 </a>
                 <Link
