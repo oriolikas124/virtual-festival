@@ -3,7 +3,7 @@
 import Header from "@/components/layout/Header";
 import BackBtn from "@/components/ui/BackBtn";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Story from "@/../data/zone_5/story.json";
@@ -36,18 +36,69 @@ export default function Page() {
   const [state, setState] = useState<StateType>("intro");
   const [storyData, setStoryData] = useState<StoryData | null>(null);
   const [currentNodeId, setCurrentNodeId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [endingType, setEndingType] = useState<string>("");
   const [videoKey, setVideoKey] = useState<number>(0);
   const [nodeHistory, setNodeHistory] = useState<string[]>([]);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const preloadedVideos = useRef<Set<string>>(new Set());
+
+  // Get next possible videos to preload
+  const getNextVideos = useCallback((nodeId: string): string[] => {
+    if (!storyData) return [];
+    const node = storyData.nodes[nodeId];
+    if (!node) return [];
+    
+    const videos: string[] = [];
+    // If has choices, preload all choice videos
+    if (node.choices) {
+      node.choices.forEach(choice => {
+        const nextNode = storyData.nodes[choice.next];
+        if (nextNode?.video) videos.push(nextNode.video);
+      });
+    }
+    // If auto next, preload next video
+    if (node.autoNext && node.next) {
+      const nextNode = storyData.nodes[node.next];
+      if (nextNode?.video) videos.push(nextNode.video);
+    }
+    return videos;
+  }, [storyData]);
+
+  // Preload videos
+  const preloadVideo = useCallback((videoSrc: string) => {
+    if (preloadedVideos.current.has(videoSrc)) return;
+    
+    const video = document.createElement('video');
+    video.preload = 'auto';
+    video.src = `/${videoSrc}`;
+    video.load();
+    preloadedVideos.current.add(videoSrc);
+  }, []);
 
   // Load story data
   useEffect(() => {
     setStoryData(Story as StoryData);
     setCurrentNodeId((Story as StoryData).start);
-    setIsLoading(false);
+    
+    // Preload first video
+    const startNode = (Story as StoryData).nodes[(Story as StoryData).start];
+    if (startNode?.video) {
+      const video = document.createElement('video');
+      video.preload = 'auto';
+      video.src = `/${startNode.video}`;
+      video.load();
+    }
   }, []);
+
+  // Preload next videos when current video is playing
+  useEffect(() => {
+    if (state === "playing" && currentNodeId && storyData) {
+      const nextVideos = getNextVideos(currentNodeId);
+      nextVideos.forEach(preloadVideo);
+    }
+  }, [currentNodeId, state, storyData, getNextVideos, preloadVideo]);
 
   // Set videoPlaying to true when currentNodeId changes during gameplay
   useEffect(() => {
@@ -183,25 +234,30 @@ export default function Page() {
             <div className="w-full max-w-4xl bg-black rounded-lg overflow-hidden">
               <div className="aspect-video relative">
                 <motion.video
+                  ref={videoRef}
                   key={videoKey}
                   src={`/${currentNode.video}`}
                   playsInline
                   autoPlay
+                  preload="auto"
                   onEnded={handleVideoEnd}
+                  onLoadStart={() => setIsVideoLoading(true)}
+                  onCanPlay={() => setIsVideoLoading(false)}
                   className="w-full h-full object-cover"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.8 }}
+                  animate={{ opacity: isVideoLoading ? 0 : 1 }}
+                  transition={{ duration: 0.3 }}
                 />
                 {/* Loading overlay */}
-                {isLoading && (
+                {isVideoLoading && (
                   <motion.div
-                    className="absolute inset-0 bg-white/10 backdrop-blur-md flex items-center justify-center"
-                    initial={{ opacity: 1 }}
-                    animate={{ opacity: 0 }}
-                    transition={{ delay: 0.5 }}
+                    className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                   >
                     <div className="w-12 h-12 border-4 border-theme-yellow border-t-transparent rounded-full animate-spin" />
+                    <p className="text-white text-sm">読み込み中...</p>
                   </motion.div>
                 )}
               </div>
