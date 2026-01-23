@@ -47,9 +47,9 @@
       "timestamp": 1768980915974
     },
     {
-      "name": "しぼ",
-      "score": 57,
-      "timestamp": 1764901214436
+      "name": "Taku",
+      "score": 64,
+      "timestamp": 1768986039362
     }
   ],
   "zone_3": [
@@ -57,6 +57,21 @@
       "name": "しぼ",
       "score": 107,
       "timestamp": 1764901434333
+    },
+    {
+      "name": "ZAWA",
+      "score": 91,
+      "timestamp": 1768983472468
+    },
+    {
+      "name": "Teishiki",
+      "score": 88,
+      "timestamp": 1768986937295
+    },
+    {
+      "name": "Yugo",
+      "score": 86,
+      "timestamp": 1768986553362
     },
     {
       "name": "Hayashi",
@@ -87,21 +102,6 @@
       "name": "Gon",
       "score": 66,
       "timestamp": 1768973830416
-    },
-    {
-      "name": "ハル",
-      "score": 66,
-      "timestamp": 1768977061961
-    },
-    {
-      "name": "Kuroda",
-      "score": 66,
-      "timestamp": 1768979925621
-    },
-    {
-      "name": "Sakaki",
-      "score": 66,
-      "timestamp": 1768980679784
     }
   ],
   "zone_4": [
@@ -131,6 +131,16 @@
       "timestamp": 1768982410236
     },
     {
+      "name": "Rhy",
+      "score": 80,
+      "timestamp": 1768983044846
+    },
+    {
+      "name": "Nikki",
+      "score": 80,
+      "timestamp": 1768985674094
+    },
+    {
       "name": "Ami",
       "score": 60,
       "timestamp": 1764900953293
@@ -144,16 +154,6 @@
       "name": "ささきさき",
       "score": 60,
       "timestamp": 1768971483613
-    },
-    {
-      "name": "yunasada",
-      "score": 60,
-      "timestamp": 1768976187018
-    },
-    {
-      "name": "ハル",
-      "score": 60,
-      "timestamp": 1768977329370
     }
   ],
   "zone_6": [
@@ -203,9 +203,9 @@
       "timestamp": 1768982136718
     },
     {
-      "name": "ハル",
-      "score": 148,
-      "timestamp": 1768977152696
+      "name": "ZAWA",
+      "score": 150,
+      "timestamp": 1768983306744
     }
   ]
 }
