@@ -1,86 +1,51 @@
-# MS26_HAL219_バーチャルフェスティバル_概要
+# Virtual Festival
 
-## 1. プロジェクト概要
+A virtual Japanese festival where visitors use their smartphones to control avatars and enjoy interactive attractions themed around different regions of Japan.
 
-来場者がスマートフォンを使ってアバター（キャラクター）を自由に動かし、日本各地の特徴をモチーフにしたゾーンで様々なアトラクションを楽しむバーチャルフェスティバルです。
+**Theme:** Japanese Festival (Japonism + festive atmosphere)
 
-**テーマ：** 「日本の祭り（ジャポニズム＋お祭り感）」  
-→ 画面全体に植物・屋台などの祭り演出を取り入れ、賑やかで楽しい雰囲気を作っています。
+## Overview
 
-各ゾーンは実際の都道府県の名物・文化をベースに設計（例：東京→電車、静岡→富士山、京都→着物…）
+The festival features multiple zones inspired by real Japanese prefectures and culture. Participants earn points in real-time, which are displayed on a shared dashboard. The experience requires multiple screens (venue map, QR page, dashboard) and a smartphone as a controller.
 
-## 2. ゾーン
+## Zones
 
-- **京都・着物トライオン** → 顔写真を撮影してAIのAPIで着物を着る写真を生成  
-  ※「.env」ファイルにGeminiのAPI Key が必要
-- **東京・山手線クイズ** → 山手線についてのクイズ
-- **東京・電車アナウンスクイズ** → アナウンス音を聞いて何線か選択
-- **静岡・富士山パズル** → 富士山のパズル
-- **奈良・鹿せんべい** → 鹿せんべいのストーリーを体験。選択によって変わる。
-- **茨城・納豆混ぜ** → 指で納豆を混ぜるチャレンジ
+- **Kyoto Kimono Try-on**: Capture a photo of your face and use AI (Gemini) to generate an image of yourself wearing a kimono.
+- **Tokyo Yamanote Line Quiz**: A quiz about Tokyo's famous Yamanote train line.
+- **Tokyo Train Announcement Quiz**: Listen to train announcements and identify which line it is.
+- **Shizuoka Mt. Fuji Puzzle**: An interactive puzzle featuring Mt. Fuji.
+- **Nara Deer Senbei Story**: Choose-your-own-adventure style story involving Nara's deer and rice crackers.
+- **Ibaraki Natto Mixing**: A fun real-time finger mixing challenge.
 
-## 3. 使用技術スタック
+## Tech Stack
 
-- **Frontend Framework:** Next.js 15
-- **Styling:** Tailwind CSS
-- **ゲームマップ制作:** Tiled Map Editor
-- **ゲームエンジン:** Phaser 3
-- **AI画像生成:** Gemini 3 pro image
-- **リアルタイム通信:** Socket.IO (+ socket.io-client)
-- **HTTPSローカル開発:** 自作証明書スクリプト
-- **その他主要ライブラリ:** headbreaker, lucide-react, framer-motion など
+- Next.js 15 with App Router and TypeScript
+- Phaser 3 (game engine)
+- Socket.IO for real-time communication
+- Gemini API for AI image generation
+- Tailwind CSS
+- Konva, Framer Motion, Lucide React, and others
+- Custom HTTPS setup for local development with camera access
 
-## 4. ローカル開発環境の立て方
+## Local Development
 
-### 必要機材
+See HTTPS-SETUP.md for detailed instructions on running with multiple displays and smartphone controller.
 
-- PCモニター × 3台または３つのタブを用い（会場マップ表示用 / 運営ダッシュボード / QR表示用）
-- Wi-Fiルーター 1台またはスマホとPCのWi-Fiが一緒であればOK（PCと来場者のスマホを同一LANに接続必須）
-- スマートフォン（来場者用コントローラー）
+Basic:
 
-### 手順
+```bash
+npm install
+npm run dev:https
+# In another terminal:
+npm run server:https
+```
 
-1. **リポジトリをクローン**
+Then access the venue map, QR page, and dashboard in the browser.
 
-2. **プロジェクトフォルダでターミナルを開き**  
-   ```bash
-   npm install
-   ```
+## Contributions
 
-3. **開発サーバ起動（2つのターミナル必要）**  
-   ```bash
-   npm run dev:https
-   ```
-   新ターミナルで
-   ```bash
-   npm run server:https
-   ```
+This was developed as a team project during studies at HAL Tokyo for a virtual exhibition event.
 
-4. **PCブラウザで以下を開く**
-   - モニター① → `https://localhost:3000/venue` ← 会場マップ画面
-   - モニター② → `https://localhost:3000/qrpage` ← QRページ画面
-   - モニター③ → `https://localhost:3000/dashboard` ← ダッシュボード画面
-   
-   ※スマホで体験しない場合はPCで `https://localhost:3000/controller` でスマホとして使っても良い、この時は下のStep５と６をスキップ
+I contributed as a programmer, working on interactive features, real-time systems, and various zone implementations.
 
-5. **QRページで環境に合わせて入力**  
-   Wifi名、パスワード、Ipアドレスは「3.」で実行したPCのIpアドレス
-
-6. **スマホでモニター②に表示されている3つのQRコードを順番にスキャン**  
-   → Wi-Fiに接続 → サーバー接続 → コントローラー画面へ遷移
-
-7. **スマホでニックネーム入力**  
-   → 「入場」ボタン → 体験開始！🎉
-
-ポイント獲得ゾーンはリアルタイムで運営ダッシュボードに反映されます
-
-## 5. チームメンバー（五十音順）
-
-- **レリタンハイ:** リダー/全体統括
-- **オルロフイゴール:** プログラマー
-- **KAUNGTHAR:** マップ制作
-- **鍾嘉朗:** BG音楽制作/デザイン
-- **沈元駿:** プログラマー
-- **程世豪:** UIデザイン/ブースブースビジュアル設計
-- **藍方:** グラフィックデザイナー
-- **LIXUEHUI:** 鹿せんべいストーリー原案・
+Original team repository: https://github.com/AnhNangCuaEm/virtual-festival
